@@ -251,6 +251,18 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
         <option value="turns">Players take turns</option>
       </select>
     </div>
+    <div class="field" id="chronoTimeField" style="display:none">
+      <label>Time for each player</label>
+      <select id="chronoTime">
+        <option value="25">25 seconds · Lightning round</option>
+        <option value="30">30 seconds · Quick</option>
+        <option value="45" selected>45 seconds · Recommended</option>
+        <option value="60">60 seconds · Relaxed</option>
+        <option value="90">90 seconds · Extended</option>
+        <option value="120">2 minutes · Marathon</option>
+      </select>
+      <small class="muted">In simultaneous mode, everyone has the same countdown. In turn mode, each player gets this full time.</small>
+    </div>
     <div class="field">
       <select id="duoMode">
         <option value="classic">🏆 Classic Duel</option>
@@ -259,7 +271,7 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
         <option value="streak">🔥 Streak Battle</option>
         <option value="double">🎲 Double or Nothing</option>
         <option value="random">🎭 Random Mode</option>
-        <option value="chrono">⏱️ Chrono Quiz (25 seconds)</option>
+        <option value="chrono">⏱️ Chrono Quiz (choose your time)</option>
       </select>
     </div>
     <h3 style="margin-top:22px">Choose subjects</h3>
@@ -1446,6 +1458,7 @@ async function createRoom() {
       seconds,
       maxPlayers:Number(document.getElementById("duoMaxPlayers")?.value || 2),
       chronoStyle:document.getElementById("chronoStyle")?.value || "simultaneous",
+      chronoSeconds:Number(document.getElementById("chronoTime")?.value || 45),
       round:0,
       roundStartedAt:0,
       questions:[],
@@ -2764,17 +2777,31 @@ window.addEventListener("beforeunload",()=>{
   function refreshSoundButton(){
     const b=$('soundToggle'); if(b) b.textContent=soundEnabled?'🔊 Sound ON':'🔇 Sound OFF';
   }
-  window.toggleGameSound=function(){
-    soundEnabled=!soundEnabled; localStorage.setItem('dc_sound',soundEnabled?'on':'off');
-    refreshSoundButton(); if(!soundEnabled) stopMusic(); else startMusic();
-  };
   function audio(){
     const C=window.AudioContext||window.webkitAudioContext;
     if(!C) return null;
     if(!audioCtx) audioCtx=new C();
-    if(audioCtx.state==='suspended') audioCtx.resume();
     return audioCtx;
   }
+  // iOS Safari requires audio to be unlocked directly inside a user gesture.
+  function unlockAudio(){
+    if(!soundEnabled) return;
+    const c=audio(); if(!c) return;
+    try{
+      if(c.state==='suspended') c.resume();
+      const o=c.createOscillator(),g=c.createGain();
+      g.gain.value=0.0001; o.frequency.value=440;
+      o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.025);
+    }catch(e){console.warn('Audio unlock failed:',e);}
+  }
+  window.toggleGameSound=function(){
+    // First tap on iPhone unlocks audio without accidentally turning it off.
+    if(soundEnabled && (!audioCtx || audioCtx.state==='suspended')){
+      unlockAudio(); tone(660,.12,'sine',.04); startMusic(); refreshSoundButton(); return;
+    }
+    soundEnabled=!soundEnabled; localStorage.setItem('dc_sound',soundEnabled?'on':'off');
+    refreshSoundButton(); if(!soundEnabled) stopMusic(); else {unlockAudio();tone(660,.12,'sine',.04);startMusic();}
+  };
   function tone(freq=660,duration=.12,type='sine',volume=.045){
     if(!soundEnabled) return;
     const c=audio(); if(!c) return;
@@ -2791,7 +2818,13 @@ window.addEventListener("beforeunload",()=>{
   }
   window.addEventListener('beforeunload',stopMusic);
   refreshSoundButton();
-  $('duoMode')?.addEventListener('change',()=>{if($('chronoStyleField'))$('chronoStyleField').style.display=$('duoMode').value==='chrono'?'block':'none';});
+  function updateChronoFields(){
+    const visible=$('duoMode')?.value==='chrono';
+    if($('chronoStyleField'))$('chronoStyleField').style.display=visible?'block':'none';
+    if($('chronoTimeField'))$('chronoTimeField').style.display=visible?'block':'none';
+  }
+  $('duoMode')?.addEventListener('change',updateChronoFields);
+  updateChronoFields();
 
   // Override lobby to show all players and the configured room capacity.
   window.renderLobby=function(){
@@ -2809,6 +2842,8 @@ window.addEventListener("beforeunload",()=>{
 
   // Start standard modes for 2–8 players; Chrono has its own 25-second engine.
   window.startDuoGame=async function(){
+    // Called from the host's Start button: unlock iPhone/Safari audio here.
+    unlockAudio();
     try{
       const api=window.firebaseDuo, room=window.getCurrentRoom(), user=window.getCurrentUser();
       if(!api||!room||!user)return;
@@ -2818,7 +2853,8 @@ window.addEventListener("beforeunload",()=>{
       if(players.length>(room.maxPlayers||2)){alert('The room has reached its player limit.');return;}
       if(room.mode==='chrono'){
         const questions=selectDuoQuestions({...room,questionCount:Math.max(40,room.questionCount||20)});
-        const state={style:room.chronoStyle||'simultaneous',startedAt:Date.now(),activeTurn:0,turnStartedAt:Date.now(),players:{}};
+        const duration=Math.max(25,Math.min(120,Number(room.chronoSeconds||45)));
+        const state={style:room.chronoStyle||'simultaneous',duration,startedAt:Date.now(),activeTurn:0,turnStartedAt:Date.now(),players:{}};
         players.forEach(p=>{const q=[...questions].sort(()=>Math.random()-.5);state.players[p.uid]={name:p.name,queue:q,index:0,score:0,correct:0,skipped:0,attempted:0};});
         await api.update(api.roomRef(room.code),{status:'playing',activeMode:'chrono',questions,chronoState:state,roundStartedAt:Date.now(),scores:Object.fromEntries(players.map(p=>[p.uid,0])),answers:{},round:0,roundResult:null});
         tone(660,.18,'triangle');startMusic();return;
@@ -2842,9 +2878,10 @@ window.addEventListener("beforeunload",()=>{
     const me=state.players?.[uid]; if(!me)return;
     const activeUid=players[state.activeTurn||0],isMyTurn=style==='simultaneous'||activeUid===uid;
     const q=currentChronoQuestion(room,uid);
-    const remaining=style==='simultaneous'?25-Math.floor((Date.now()-state.startedAt)/1000):25-Math.floor((Date.now()-state.turnStartedAt)/1000);
+    const duration=Number(state.duration||room.chronoSeconds||45);
+    const remaining=style==='simultaneous'?duration-Math.floor((Date.now()-state.startedAt)/1000):duration-Math.floor((Date.now()-state.turnStartedAt)/1000);
     const panel=$('duoGameScreen');
-    panel.innerHTML=`<div class="duo-game-panel"><div class="duo-game-top"><button onclick="leaveDuoGame()">← Leave</button><span>⏱️ CHRONO QUIZ · ${style==='simultaneous'?'SIMULTANEOUS':'TURN BY TURN'}</span><button onclick="toggleGameSound()">${soundEnabled?'🔊':'🔇'}</button></div><div class="chrono-clock" id="chronoClock">${Math.max(0,remaining)}s</div><div class="chrono-player-grid">${chronoScoresHTML(room)}</div>${isMyTurn&&remaining>0&&q?`<div class="chrono-panel"><p class="muted">Question ${me.attempted+1} · ${escapeHTML(q.pack||'Quiz')}</p><h2>${escapeHTML(q.question||q.text||'')}</h2><div class="duo-options">${(q.options||[]).map((o,i)=>`<button class="duo-answer-option" onclick="chronoAnswer(${i})"><span class="duo-option-letter">${String.fromCharCode(65+i)}</span>${escapeHTML(o)}</button>`).join('')}</div><button class="chrono-skip" style="width:100%;margin-top:12px" onclick="chronoSkip()">SKIP QUESTION →</button></div>`:style==='turns'&&remaining>0?`<div class="chrono-wait">It's ${escapeHTML(state.players[activeUid]?.name||'another player')}'s turn. Get ready!</div>`:`<div class="chrono-wait">Time is up! Waiting for the results...</div>`}<p class="muted center">${style==='simultaneous'?'Everyone plays during the same 25 seconds.':'Each player gets their own 25-second turn.'}</p></div>`;
+    panel.innerHTML=`<div class="duo-game-panel"><div class="duo-game-top"><button onclick="leaveDuoGame()">← Leave</button><span>⏱️ CHRONO QUIZ · ${style==='simultaneous'?'SIMULTANEOUS':'TURN BY TURN'} · ${duration}s</span><button onclick="toggleGameSound()">${soundEnabled?'🔊':'🔇'}</button></div><div class="chrono-clock" id="chronoClock">${Math.max(0,remaining)}s</div><div class="chrono-player-grid">${chronoScoresHTML(room)}</div>${isMyTurn&&remaining>0&&q?`<div class="chrono-panel"><p class="muted">Question ${me.attempted+1} · ${escapeHTML(q.pack||'Quiz')}</p><h2>${escapeHTML(q.question||q.text||'')}</h2><div class="duo-options">${(q.options||[]).map((o,i)=>`<button class="duo-answer-option" onclick="chronoAnswer(${i})"><span class="duo-option-letter">${String.fromCharCode(65+i)}</span>${escapeHTML(o)}</button>`).join('')}</div><button class="chrono-skip" style="width:100%;margin-top:12px" onclick="chronoSkip()">SKIP QUESTION →</button></div>`:style==='turns'&&remaining>0?`<div class="chrono-wait">It's ${escapeHTML(state.players[activeUid]?.name||'another player')}'s turn. Get ready!</div>`:`<div class="chrono-wait">Time is up! Waiting for the results...</div>`}<p class="muted center">${style==='simultaneous'?`Everyone plays during the same ${duration} seconds.`:`Each player gets their own ${duration}-second turn.`}</p></div>`;
   };
 
   async function chronoMove(uid,optionIndex,skip=false){
@@ -2886,7 +2923,8 @@ window.addEventListener("beforeunload",()=>{
     chronoTick=setInterval(async()=>{
       const r=window.getCurrentRoom();if(!r||r.status!=='playing'||r.activeMode!=='chrono'){clearInterval(chronoTick);chronoTick=null;return;}
       const st=chronoState(r),start=st.style==='simultaneous'?st.startedAt:st.turnStartedAt;
-      const rem=Math.max(0,25-Math.floor((Date.now()-start)/1000));
+      const duration=Number(st.duration||r.chronoSeconds||45);
+      const rem=Math.max(0,duration-Math.floor((Date.now()-start)/1000));
       const clock=$('chronoClock');if(clock)clock.textContent=rem+'s';
       if(rem<=0&&host){clearInterval(chronoTick);chronoTick=null;await finishChronoTurn(r);}
     },200);
@@ -2897,7 +2935,7 @@ window.addEventListener("beforeunload",()=>{
     if(chronoTick){clearInterval(chronoTick);chronoTick=null;}stopMusic();
     const players=Object.entries(room.players||{}).map(([uid,p])=>({uid,...p,score:Number(room.scores?.[uid]??room.chronoState?.players?.[uid]?.score??0)})).sort((a,b)=>b.score-a.score);
     const winner=players.length&&players[0].score>(players[1]?.score??-1)?players[0]:null;
-    $('duoGameScreen').innerHTML=`<div class="duo-result-panel"><div class="duo-result-icon">🏆</div><h1>${winner?escapeHTML(winner.name)+' wins!':'It\'s a draw!'}</h1><p>${room.activeMode==='chrono'?'Chrono Quiz · 25 seconds':'Challenge complete'}</p><div class="duo-final-ranking">${players.map((p,i)=>`<div class="duo-final-player"><span>${i===0?'🏆':i===1?'🥈':'#'+(i+1)} ${escapeHTML(p.name)}</span><strong>${p.score} pts</strong></div>`).join('')}</div>${room.activeMode==='chrono'?`<p>${Object.values(room.chronoState?.players||{}).reduce((n,p)=>n+(p.correct||0),0)} correct answers across the room</p>`:''}<button onclick="playDuoAgain()">Play Again</button><button onclick="leaveDuoGame()">Back to Home</button></div>`;
+    $('duoGameScreen').innerHTML=`<div class="duo-result-panel"><div class="duo-result-icon">🏆</div><h1>${winner?escapeHTML(winner.name)+' wins!':'It\'s a draw!'}</h1><p>${room.activeMode==='chrono'?`Chrono Quiz · ${Number(room.chronoState?.duration||room.chronoSeconds||45)} seconds`:'Challenge complete'}</p><div class="duo-final-ranking">${players.map((p,i)=>`<div class="duo-final-player"><span>${i===0?'🏆':i===1?'🥈':'#'+(i+1)} ${escapeHTML(p.name)}</span><strong>${p.score} pts</strong></div>`).join('')}</div>${room.activeMode==='chrono'?`<p>${Object.values(room.chronoState?.players||{}).reduce((n,p)=>n+(p.correct||0),0)} correct answers across the room</p>`:''}<button onclick="playDuoAgain()">Play Again</button><button onclick="leaveDuoGame()">Back to Home</button></div>`;
     showScreen('duoGameScreen');tone(winner?1046:520,.45,'triangle',.06);
   };
 
