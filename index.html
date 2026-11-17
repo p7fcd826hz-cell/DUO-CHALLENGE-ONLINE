@@ -4,191 +4,1251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101020">
 <title>DUO CHALLENGE</title>
 <style>
-:root{--bg:#0b1020;--panel:#151d33;--panel2:#1c2742;--text:#f4f6ff;--muted:#9ba8c7;--purple:#8b72ff;--cyan:#42d9d0;--good:#42d9a0;--bad:#ff7185}
+:root {
+  --bg:#101020;
+  --panel:#1b1b31;
+  --panel2:#24243e;
+  --purple:#9575ff;
+  --cyan:#42d9d0;
+  --pink:#ff6fae;
+  --text:#f5f4ff;
+  --muted:#a6a4bf;
+  --green:#4bd69a;
+  --red:#ff647c;
+  --border:rgba(255,255,255,.09);
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 15% 0%,#22204b 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#27204b 0,#101020 50%);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+  min-height:100vh;
+}
 button,input,select{font:inherit}
-button{border:0;cursor:pointer;font-weight:700;border-radius:12px;padding:12px 17px;background:var(--purple);color:white;transition:.2s}
-button:hover{filter:brightness(1.12);transform:translateY(-1px)}
-button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.secondary{background:#293553;color:var(--text)}
-.outline{background:transparent;border:1px solid #526080;color:var(--text)}
-.danger{background:#7b3048}
-.wrap{max-width:1000px;margin:auto;padding:24px 18px 60px}
-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:34px}
-.logo{font-size:21px;font-weight:900;letter-spacing:1px}
-.logo span{color:var(--cyan)}
-.pill{font-size:12px;color:var(--cyan);border:1px solid #286c70;padding:6px 10px;border-radius:30px}
-.hero{text-align:center;padding:38px 10px 25px}
-.hero h1{font-size:clamp(36px,7vw,64px);line-height:1;margin:0 0 15px;letter-spacing:-2px}
+button{cursor:pointer}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 5%;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:rgba(16,16,32,.94);
+  backdrop-filter:blur(12px);z-index:10;
+}
+.logo{font-weight:900;font-size:22px;letter-spacing:1px}
+.logo span{color:var(--purple)}
+.status{font-size:12px;color:var(--muted)}
+main{width:min(1050px,94%);margin:35px auto 70px}
+.screen{display:none}
+.screen.active{display:block;animation:appear .25s ease}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:40px 10px 25px}
+.hero h1{font-size:clamp(35px,7vw,65px);margin:0 0 12px;font-weight:950}
 .hero h1 span{color:var(--purple)}
-.hero p{color:var(--muted);max-width:600px;margin:0 auto;line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:25px 0}
-.card{background:linear-gradient(145deg,var(--panel),#11182b);border:1px solid #293653;border-radius:19px;padding:22px}
-.card h2,.card h3{margin-top:0}
-.card p{color:var(--muted);line-height:1.55}
-.bigicon{font-size:32px;margin-bottom:12px}
-.card button{width:100%;margin-top:10px}
-.section{margin-top:24px}
-.hidden{display:none!important}
-input,select{width:100%;padding:13px 14px;border-radius:11px;background:#0e1629;border:1px solid #394766;color:white;margin:7px 0 13px;outline:none}
-label{font-size:13px;color:var(--muted)}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.row>*{flex:1}
-.small{font-size:12px;color:var(--muted)}
-.status{padding:10px 13px;background:#17253a;border:1px solid #314665;border-radius:12px;color:var(--muted);font-size:13px;margin:15px 0}
-.status.good{color:var(--good);border-color:#286a56}
-.status.warn{color:#ffd17a;border-color:#735b2b}
-#game{max-width:760px;margin:20px auto}
-.gameTop{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
-.stat{background:#18233b;padding:10px 14px;border-radius:12px;font-size:13px}
-.progress{height:7px;background:#26324e;border-radius:10px;overflow:hidden;margin:15px 0 22px}
+.hero p{color:var(--muted);line-height:1.6}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:17px;margin-top:25px}
+.card{
+  background:linear-gradient(145deg,var(--panel2),var(--panel));
+  border:1px solid var(--border);border-radius:20px;
+  padding:23px;box-shadow:0 12px 35px #0002;
+}
+.mode-card{cursor:pointer;transition:.2s}
+.mode-card:hover{transform:translateY(-4px);border-color:var(--purple)}
+.mode-icon{font-size:35px;margin-bottom:15px}
+.card h2,.card h3{margin:0 0 10px}
+.card p{color:var(--muted);line-height:1.5;font-size:14px}
+.primary,.secondary,.danger{
+  border:0;border-radius:12px;padding:13px 19px;
+  font-weight:800;transition:.2s;
+}
+.primary{background:linear-gradient(100deg,var(--purple),#7457df);color:white}
+.secondary{background:var(--panel2);color:white;border:1px solid var(--border)}
+.danger{background:#512534;color:#ffb9c7}
+button:hover{filter:brightness(1.13)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.full{width:100%}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.field{margin:15px 0}
+.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}
+.field input,.field select{
+  width:100%;padding:13px;border-radius:10px;
+  background:#101020;border:1px solid var(--border);color:white;
+  outline:none;
+}
+.field input:focus,.field select:focus{border-color:var(--purple)}
+.section-title{font-size:25px;margin:0 0 7px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}
+.check{
+  display:flex;align-items:center;gap:9px;padding:12px;
+  background:#101020;border:1px solid var(--border);border-radius:11px;
+  font-size:14px;cursor:pointer;
+}
+.check input{accent-color:var(--purple);width:17px;height:17px}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#302751;color:#c7baff;font-size:11px;font-weight:800}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.progress{height:7px;background:#33324a;border-radius:10px;overflow:hidden;margin:15px 0}
 .progress div{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));width:0%;transition:.3s}
-.question{font-size:clamp(21px,4vw,30px);font-weight:800;line-height:1.3;margin:15px 0 22px}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.answer{background:#202c49;border:1px solid #354564;text-align:left;min-height:58px}
-.answer.selected{border-color:var(--cyan);background:#17404a}
-.answer.correct{border-color:var(--good);background:#174434}
-.answer.wrong{border-color:var(--bad);background:#482536}
-.feedback{padding:14px;border-radius:12px;margin:15px 0;line-height:1.5}
-.feedback.good{background:#123b31;color:#8ef0c7}
-.feedback.bad{background:#482536;color:#ffb2bd}
-.timer{font-weight:900;color:var(--cyan)}
-.players{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
-.player{background:#202c49;padding:12px 14px;border-radius:12px;flex:1;min-width:140px}
-.player strong{display:block;margin-bottom:4px}
-.code{font-size:27px;letter-spacing:5px;font-weight:900;color:var(--cyan);background:#0d172b;padding:15px;border-radius:12px;text-align:center;margin:10px 0}
-footer{text-align:center;color:#667493;font-size:12px;margin-top:40px}
-@media(max-width:560px){.answers{grid-template-columns:1fr}.wrap{padding:17px 13px 40px}.hero{padding-top:25px}header{margin-bottom:15px}}
+.question{font-size:clamp(21px,4vw,30px);line-height:1.4;margin:22px 0}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px}
+.answer{
+  background:#292943;border:1px solid var(--border);border-radius:13px;
+  padding:15px;text-align:left;color:white;min-height:55px;
+}
+.answer.correct{border-color:var(--green);background:#153c35}
+.answer.wrong{border-color:var(--red);background:#46232e}
+.answer:disabled{cursor:default;opacity:1}
+.feedback{padding:14px;border-radius:12px;margin-top:15px;display:none;line-height:1.5}
+.feedback.show{display:block}
+.feedback.good{background:#143b32;color:#a6ffdc}
+.feedback.bad{background:#46232e;color:#ffc1cc}
+.timer{font-size:23px;font-weight:900;color:var(--cyan)}
+.score-row{display:flex;gap:12px;flex-wrap:wrap}
+.score-box{flex:1;min-width:130px;background:#101020;padding:14px;border-radius:12px}
+.score-box strong{display:block;font-size:26px;margin-top:5px}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.room-code{font-size:35px;font-weight:950;letter-spacing:7px;color:var(--cyan);margin:15px 0}
+.notice{padding:12px;background:#302751;border-radius:10px;color:#d8d0ff;font-size:13px;line-height:1.5}
+footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
+@media(max-width:600px){
+  header{padding:14px 4%}
+  main{margin-top:18px}
+  .hero{padding-top:25px}
+  .card{padding:18px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
 <header>
   <div class="logo">DUO <span>CHALLENGE</span></div>
-  <div class="pill">LEARN · PLAY · COMPETE</div>
+  <div class="status" id="connectionStatus">● Initializing...</div>
 </header>
 
-<section id="home">
+<main>
+
+<!-- HOME -->
+<section id="homeScreen" class="screen active">
   <div class="hero">
-    <h1>READY TO <span>CHALLENGE?</span></h1>
-    <p>Test your knowledge, discover new things and challenge your friends. Every question is a new opportunity to learn.</p>
+    <span class="tag">LEARN • PLAY • COMPETE</span>
+    <h1>DUO <span>CHALLENGE</span></h1>
+    <p>Challenge your knowledge. Improve your skills.<br>Play alone or compete with a friend.</p>
   </div>
-  <div id="connection" class="status warn">Connecting to online services...</div>
-  <div class="grid">
-    <div class="card">
-      <div class="bigicon">🎯</div>
-      <h2>Solo Mode</h2>
-      <p>Play at your own pace, improve your knowledge and beat your personal best.</p>
-      <button onclick="showSoloSetup()">PLAY SOLO</button>
+  <div class="cards">
+    <div class="card mode-card" onclick="showScreen('soloSetupScreen')">
+      <div class="mode-icon">🎯</div>
+      <h2>SOLO MODE</h2>
+      <p>Train at your own pace. Choose your subjects, improve your level and beat your personal records.</p>
+      <button class="primary full">PLAY SOLO</button>
     </div>
-    <div class="card">
-      <div class="bigicon">⚡</div>
-      <h2>Duo Mode</h2>
-      <p>Create a private room or join your friend's room with an invitation code.</p>
-      <button onclick="showDuoSetup()">PLAY WITH A FRIEND</button>
+    <div class="card mode-card" onclick="showScreen('duoSetupScreen')">
+      <div class="mode-icon">⚔️</div>
+      <h2>DUO MODE</h2>
+      <p>Challenge a friend online. Compete in different mini-games and discover who is the champion.</p>
+      <button class="primary full">PLAY DUO</button>
     </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="topline">
+      <div>
+        <h3>Your learning journey</h3>
+        <p class="muted">Your personal progress will appear here.</p>
+      </div>
+      <span class="tag">PLAYER PROFILE</span>
+    </div>
+    <div class="score-row">
+      <div class="score-box"><span class="muted">Games played</span><strong id="homeGames">0</strong></div>
+      <div class="score-box"><span class="muted">Best score</span><strong id="homeBest">0</strong></div>
+      <div class="score-box"><span class="muted">Correct answers</span><strong id="homeCorrect">0</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLO SETUP -->
+<section id="soloSetupScreen" class="screen">
+  <div class="topline">
+    <div><h2 class="section-title">Solo Setup</h2><p class="sub">Choose what you want to practise.</p></div>
+    <button class="secondary" onclick="showScreen('homeScreen')">← Back</button>
   </div>
   <div class="card">
-    <h3>Explore your knowledge</h3>
-    <p>Chinese · English · French · Mathematics · Computer Science · C Programming · General Knowledge · Logic</p>
-    <p class="small">Your solo question history is saved on this device. Duo question history is saved in the room.</p>
-  </div>
-</section>
-
-<section id="soloSetup" class="card hidden">
-  <h2>Solo Challenge</h2>
-  <label for="soloName">Your player name</label>
-  <input id="soloName" maxlength="18" placeholder="Enter your name">
-  <label for="soloCategory">Choose a subject</label>
-  <select id="soloCategory"></select>
-  <label for="soloLevel">Choose your level</label>
-  <select id="soloLevel">
-    <option value="all">All levels</option><option value="Easy">Easy</option>
-    <option value="Medium">Medium</option><option value="Hard">Hard</option>
-  </select>
-  <div class="row">
-    <button onclick="startSolo()">START SOLO GAME</button>
-    <button class="secondary" onclick="goHome()">BACK</button>
-  </div>
-  <p class="small">Questions you have played recently will be avoided for five days whenever possible.</p>
-</section>
-
-<section id="duoSetup" class="card hidden">
-  <h2>Duo Challenge</h2>
-  <label for="duoName">Your player name</label>
-  <input id="duoName" maxlength="18" placeholder="Enter your name">
-  <div class="grid">
-    <div class="card">
-      <h3>Create a room</h3>
-      <p>Open a new private room and invite your friend.</p>
-      <button onclick="createRoom()">CREATE ROOM</button>
+    <h3>Subjects</h3>
+    <div class="check-grid">
+      <label class="check"><input type="checkbox" id="soloLanguages" checked> Languages</label>
+      <label class="check"><input type="checkbox" id="soloCulture" checked> General Knowledge</label>
+      <label class="check"><input type="checkbox" id="soloLogic" checked> Logic & Puzzles</label>
+      <label class="check"><input type="checkbox" id="soloMath"> Mathematics</label>
+      <label class="check"><input type="checkbox" id="soloScience"> Science & Nature</label>
     </div>
-    <div class="card">
-      <h3>Join a room</h3>
-      <p>Enter the invitation code shared by your friend.</p>
-      <input id="joinCode" maxlength="6" placeholder="ROOM CODE">
-      <button onclick="joinRoom()">JOIN ROOM</button>
+    <div id="soloLanguageOptions">
+      <h3 style="margin-top:25px">Languages</h3>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" id="soloFrench" checked> French</label>
+        <label class="check"><input type="checkbox" id="soloEnglish" checked> English</label>
+        <label class="check"><input type="checkbox" id="soloChinese" checked> Chinese</label>
+      </div>
+      <h3 style="margin-top:25px">Difficulty levels</h3>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" id="soloA1" checked> A1 Beginner</label>
+        <label class="check"><input type="checkbox" id="soloA2" checked> A2 Elementary</label>
+        <label class="check"><input type="checkbox" id="soloB1" checked> B1 Intermediate</label>
+        <label class="check"><input type="checkbox" id="soloB2" checked> B2 Upper Intermediate</label>
+        <label class="check"><input type="checkbox" id="soloC1" checked> C1 Advanced</label>
+      </div>
     </div>
+    <div class="field">
+      <label>Number of questions</label>
+      <select id="soloCount">
+        <option value="10">10 questions</option>
+        <option value="15">15 questions</option>
+        <option value="20" selected>20 questions</option>
+        <option value="30">30 questions</option>
+        <option value="50">50 questions</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Time per question</label>
+      <select id="soloTime">
+        <option value="15">15 seconds</option>
+        <option value="20" selected>20 seconds</option>
+        <option value="30">30 seconds</option>
+        <option value="45">45 seconds</option>
+      </select>
+    </div>
+    <button class="primary full" onclick="startSolo()">START SOLO GAME →</button>
   </div>
-  <button class="secondary" onclick="goHome()">BACK</button>
 </section>
 
-<section id="lobby" class="card hidden">
-  <h2>Private Room</h2>
-  <p>Share this code with your friend:</p>
-  <div id="roomCode" class="code">------</div>
-  <button class="secondary" onclick="copyRoomCode()">COPY INVITATION CODE</button>
-  <div id="lobbyPlayers" class="players"></div>
-  <div id="lobbyMessage" class="status">Waiting for another player...</div>
-  <button id="startDuo" onclick="startDuoGame()" disabled>START DUO GAME</button>
-  <button class="secondary" onclick="leaveRoom()">LEAVE ROOM</button>
-</section>
-
-<section id="game" class="hidden">
-  <div class="gameTop">
-    <div class="stat" id="modeLabel">SOLO MODE</div>
-    <div class="stat">Question <span id="qNumber">1</span>/<span id="qTotal">10</span></div>
-    <div class="stat">Time: <span id="timer" class="timer">20</span>s</div>
+<!-- DUO SETUP -->
+<section id="duoSetupScreen" class="screen">
+  <div class="topline">
+    <div><h2 class="section-title">Duo Challenge</h2><p class="sub">Choose your competition.</p></div>
+    <button class="secondary" onclick="showScreen('homeScreen')">← Back</button>
   </div>
-  <div class="progress"><div id="progressBar"></div></div>
-  <div class="players" id="scoreBoard"></div>
   <div class="card">
-    <div class="row">
-      <div class="small" id="categoryLabel">CATEGORY</div>
-      <div class="small" id="levelLabel" style="text-align:right">LEVEL</div>
+    <h3>Competition mode</h3>
+    <div class="field">
+      <select id="duoMode">
+        <option value="classic">🏆 Classic Duel</option>
+        <option value="speed">⚡ Speed Race</option>
+        <option value="sudden">💀 Sudden Death</option>
+        <option value="streak">🔥 Streak Battle</option>
+        <option value="double">🎲 Double or Nothing</option>
+        <option value="random">🎭 Random Mode</option>
+      </select>
     </div>
-    <div class="question" id="questionText">Question goes here</div>
-    <div id="answerArea" class="answers"></div>
-    <div id="feedback"></div>
-    <div id="explanation" class="small"></div>
-    <div id="gameActions" class="row" style="margin-top:18px"></div>
+    <h3 style="margin-top:22px">Choose subjects</h3>
+    <div class="check-grid">
+      <label class="check"><input type="checkbox" id="duoPackLanguages" checked> Languages</label>
+      <label class="check"><input type="checkbox" id="duoPackCulture" checked> General Knowledge</label>
+      <label class="check"><input type="checkbox" id="duoPackLogic" checked> Logic & Puzzles</label>
+      <label class="check"><input type="checkbox" id="duoPackMath"> Mathematics</label>
+      <label class="check"><input type="checkbox" id="duoPackScience"> Science & Nature</label>
+    </div>
+    <div id="duoLanguageOptions">
+      <h3 style="margin-top:22px">Language selection</h3>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" id="duoFrench" checked> French</label>
+        <label class="check"><input type="checkbox" id="duoEnglish" checked> English</label>
+        <label class="check"><input type="checkbox" id="duoChinese" checked> Chinese</label>
+      </div>
+      <h3 style="margin-top:22px">Difficulty</h3>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" id="duoA1" checked> A1</label>
+        <label class="check"><input type="checkbox" id="duoA2" checked> A2</label>
+        <label class="check"><input type="checkbox" id="duoB1" checked> B1</label>
+        <label class="check"><input type="checkbox" id="duoB2" checked> B2</label>
+        <label class="check"><input type="checkbox" id="duoC1" checked> C1</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Number of rounds</label>
+      <select id="duoCount">
+        <option value="5">5 rounds</option>
+        <option value="10" selected>10 rounds</option>
+        <option value="15">15 rounds</option>
+        <option value="20">20 rounds</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Time per round</label>
+      <select id="duoTime">
+        <option value="15">15 seconds</option>
+        <option value="20" selected>20 seconds</option>
+        <option value="30">30 seconds</option>
+        <option value="45">45 seconds</option>
+      </select>
+    </div>
+    <div class="actions">
+      <button class="primary" onclick="createRoom()">CREATE ROOM</button>
+      <button class="secondary" onclick="showScreen('joinScreen')">JOIN A ROOM</button>
+    </div>
+    <p class="muted" style="font-size:12px">The host selects the subjects and competition settings for the room.</p>
   </div>
-  <button class="secondary" onclick="exitGame()" style="margin-top:14px">EXIT GAME</button>
 </section>
 
-<section id="results" class="card hidden">
-  <div class="hero" style="padding:10px">
-    <div class="bigicon">🏆</div>
-    <h1 id="resultTitle">WELL PLAYED!</h1>
-    <p id="resultText">Your challenge is complete.</p>
+<!-- JOIN ROOM -->
+<section id="joinScreen" class="screen">
+  <div class="topline">
+    <h2 class="section-title">Join a room</h2>
+    <button class="secondary" onclick="showScreen('duoSetupScreen')">← Back</button>
   </div>
-  <div id="finalScores" class="players"></div>
-  <button onclick="playAgain()">PLAY AGAIN</button>
-  <button class="secondary" onclick="goHome()">HOME</button>
+  <div class="card">
+    <div class="field"><label>Your player name</label><input id="joinName" maxlength="18" placeholder="Enter your name"></div>
+    <div class="field"><label>Room code</label><input id="joinCode" maxlength="6" placeholder="ABC123" style="text-transform:uppercase"></div>
+    <button class="primary full" onclick="joinRoom()">JOIN CHALLENGE</button>
+  </div>
 </section>
 
-<footer>DUO CHALLENGE · A LITTLE KNOWLEDGE EVERY DAY MAKES A BIG DIFFERENCE</footer>
-</div>
+<!-- LOBBY -->
+<section id="lobbyScreen" class="screen">
+  <div class="topline">
+    <div><h2 class="section-title">Waiting Room</h2><p class="sub">Invite your friend to join.</p></div>
+    <button class="secondary" onclick="leaveRoom()">Leave</button>
+  </div>
+  <div class="card center">
+    <p class="muted">YOUR ROOM CODE</p>
+    <div class="room-code" id="roomCodeDisplay">------</div>
+    <button class="secondary" onclick="copyRoomCode()">COPY CODE</button>
+    <div class="score-row" style="margin-top:22px;text-align:left">
+      <div class="score-box"><span class="muted">Player 1</span><strong id="lobbyPlayer1">Waiting...</strong></div>
+      <div class="score-box"><span class="muted">Player 2</span><strong id="lobbyPlayer2">Waiting...</strong></div>
+    </div>
+    <p id="lobbyMessage" class="notice" style="margin-top:18px">Waiting for another player...</p>
+    <button id="startDuoButton" class="primary full hidden" onclick="startDuoGame()" style="margin-top:15px">START CHALLENGE</button>
+  </div>
+</section>
+
+<!-- SOLO GAME -->
+<section id="soloGameScreen" class="screen">
+  <div class="topline">
+    <div><span class="tag">SOLO MODE</span><h2 id="soloRoundLabel">Question 1</h2></div>
+    <div class="timer" id="soloTimer">20s</div>
+  </div>
+  <div class="progress"><div id="soloProgress"></div></div>
+  <div class="score-row">
+    <div class="score-box"><span class="muted">Score</span><strong id="soloScore">0</strong></div>
+    <div class="score-box"><span class="muted">Correct</span><strong id="soloCorrect">0</strong></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <span class="tag" id="soloCategory">LANGUAGE</span>
+    <div class="question" id="soloQuestion">Question will appear here.</div>
+    <div class="answers" id="soloAnswers"></div>
+    <div id="soloFeedback" class="feedback"></div>
+    <div class="actions">
+      <button id="soloNextButton" class="primary full hidden" onclick="nextSolo()">NEXT QUESTION →</button>
+    </div>
+  </div>
+</section>
+
+<!-- DUO GAME -->
+<section id="duoGameScreen" class="screen">
+  <div class="topline">
+    <div><span class="tag">DUO BATTLE</span><h2 id="duoRoundLabel">Round 1</h2></div>
+    <div class="timer" id="duoTimer">20s</div>
+  </div>
+  <div class="progress"><div id="duoProgress"></div></div>
+  <div class="score-row">
+    <div class="score-box"><span class="muted" id="duoName1">Player 1</span><strong id="duoScore1">0</strong></div>
+    <div class="score-box"><span class="muted" id="duoName2">Player 2</span><strong id="duoScore2">0</strong></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <div class="topline">
+      <span class="tag" id="duoModeLabel">CLASSIC DUEL</span>
+      <span class="muted" id="duoRoundStatus">Get ready!</span>
+    </div>
+    <span class="tag" id="duoCategory" style="margin-top:15px">CATEGORY</span>
+    <div class="question" id="duoQuestion">Question will appear here.</div>
+    <div class="answers" id="duoAnswers"></div>
+    <div id="duoFeedback" class="feedback"></div>
+    <div id="duoStakeArea" class="field hidden">
+      <label>Choose your stake</label>
+      <select id="duoStake"><option value="5">5 points</option><option value="10">10 points</option><option value="20">20 points</option></select>
+    </div>
+    <p id="duoWaiting" class="notice hidden">Answer submitted. Waiting for your opponent...</p>
+    <button id="duoNextButton" class="primary full hidden" onclick="advanceDuo()">NEXT ROUND →</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="resultScreen" class="screen">
+  <div class="hero">
+    <div style="font-size:55px">🏆</div>
+    <h1 id="resultTitle">CHALLENGE COMPLETE</h1>
+    <p id="resultSubtitle">Here are your results.</p>
+  </div>
+  <div class="card">
+    <div class="score-row">
+      <div class="score-box"><span class="muted" id="resultName1">Player 1</span><strong id="resultScore1">0</strong></div>
+      <div class="score-box"><span class="muted" id="resultName2">Player 2</span><strong id="resultScore2">0</strong></div>
+    </div>
+    <div class="actions">
+      <button class="primary full" onclick="playAgain()">PLAY AGAIN</button>
+      <button class="secondary full" onclick="exitGame()">HOME</button>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>DUO CHALLENGE • Learn together. Compete together.</footer>
+<script>
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const target=document.getElementById(id);
+  if(target) target.classList.add('active');
+}
+</script>
+
+<!-- QUESTION BANK AND GAME LOGIC CONTINUE BELOW -->
+
+
+<script>
+/* =========================================
+   DUO CHALLENGE — PART 2
+   QUESTION BANK AND QUESTION GENERATOR
+========================================= */
+
+const BANK = [];
+const USED_FAMILIES = new Set();
+
+function addQuestion(pack, question, options, answer, explanation, extra={}) {
+  BANK.push({
+    id: "q_" + (BANK.length+1),
+    family: extra.family || ("family_" + (BANK.length+1)),
+    pack,
+    question,
+    options,
+    answer,
+    explanation,
+    language: extra.language || "",
+    level: extra.level || "",
+    type: extra.type || "mcq"
+  });
+}
+
+/* ---------- LANGUAGE VOCABULARY ---------- */
+
+const VOCAB = {
+  French: {
+    A1: [
+      ["hello","bonjour"],["goodbye","au revoir"],["thank you","merci"],
+      ["please","s'il vous plaît"],["yes","oui"],["no","non"],
+      ["water","eau"],["bread","pain"],["house","maison"],
+      ["school","école"],["book","livre"],["friend","ami"],
+      ["family","famille"],["mother","mère"],["father","père"],
+      ["brother","frère"],["sister","sœur"],["dog","chien"],
+      ["cat","chat"],["today","aujourd'hui"],["tomorrow","demain"],
+      ["morning","matin"],["night","nuit"],["food","nourriture"],
+      ["car","voiture"],["city","ville"],["country","pays"],
+      ["student","étudiant"],["teacher","professeur"],["name","nom"]
+    ],
+    A2: [
+      ["to travel","voyager"],["to understand","comprendre"],
+      ["to choose","choisir"],["to wait","attendre"],
+      ["to learn","apprendre"],["to forget","oublier"],
+      ["to remember","se souvenir"],["to buy","acheter"],
+      ["to sell","vendre"],["to arrive","arriver"],
+      ["to leave","partir"],["to meet","rencontrer"],
+      ["beautiful","beau"],["expensive","cher"],
+      ["cheap","bon marché"],["early","tôt"],
+      ["late","en retard"],["weather","temps"],
+      ["journey","voyage"],["neighbour","voisin"],
+      ["appointment","rendez-vous"],["mistake","erreur"],
+      ["question","question"],["answer","réponse"],
+      ["usually","habituellement"],["sometimes","parfois"]
+    ],
+    B1: [
+      ["although","bien que"],["however","cependant"],
+      ["therefore","par conséquent"],["improvement","amélioration"],
+      ["opportunity","occasion"],["environment","environnement"],
+      ["behaviour","comportement"],["achievement","réussite"],
+      ["to suggest","suggérer"],["to avoid","éviter"],
+      ["to realize","se rendre compte"],["to succeed","réussir"],
+      ["to fail","échouer"],["to depend on","dépendre de"],
+      ["reliable","fiable"],["aware","conscient"],
+      ["available","disponible"],["necessary","nécessaire"],
+      ["relationship","relation"],["experience","expérience"]
+    ],
+    B2: [
+      ["nevertheless","néanmoins"],["whereas","tandis que"],
+      ["despite","malgré"],["to enhance","améliorer"],
+      ["to assume","supposer"],["to convince","convaincre"],
+      ["to assess","évaluer"],["to claim","affirmer"],
+      ["controversial","controversé"],["accurate","précis"],
+      ["relevant","pertinent"],["substantial","considérable"],
+      ["outcome","résultat"],["evidence","preuve"],
+      ["drawback","inconvénient"],["approach","approche"],
+      ["concern","préoccupation"],["challenge","défi"]
+    ],
+    C1: [
+      ["negligible","négligeable"],["ambiguous","ambigu"],
+      ["to undermine","saper"],["to foster","favoriser"],
+      ["to implement","mettre en œuvre"],["to acknowledge","reconnaître"],
+      ["to anticipate","anticiper"],["to deteriorate","se détériorer"],
+      ["comprehensive","complet"],["inevitable","inévitable"],
+      ["subtle","subtil"],["outstanding","remarquable"],
+      ["misleading","trompeur"],["accountability","responsabilité"],
+      ["constraint","contrainte"],["insight","perspicacité"],
+      ["thorough","approfondi"],["plausible","plausible"]
+    ]
+  },
+
+  English: {
+    A1: [
+      ["bonjour","hello"],["merci","thank you"],["chat","cat"],
+      ["chien","dog"],["maison","house"],["école","school"],
+      ["livre","book"],["eau","water"],["pain","bread"],
+      ["rouge","red"],["bleu","blue"],["vert","green"],
+      ["grand","big"],["petit","small"],["heureux","happy"],
+      ["triste","sad"],["manger","to eat"],["boire","to drink"],
+      ["dormir","to sleep"],["parler","to speak"],
+      ["lire","to read"],["écrire","to write"],
+      ["aujourd'hui","today"],["demain","tomorrow"],
+      ["famille","family"],["ami","friend"],
+      ["voiture","car"],["ville","city"],["soleil","sun"],
+      ["lune","moon"]
+    ],
+    A2: [
+      ["voyager","to travel"],["comprendre","to understand"],
+      ["choisir","to choose"],["attendre","to wait"],
+      ["apprendre","to learn"],["oublier","to forget"],
+      ["acheter","to buy"],["vendre","to sell"],
+      ["arriver","to arrive"],["partir","to leave"],
+      ["rencontrer","to meet"],["cher","expensive"],
+      ["bon marché","cheap"],["tôt","early"],
+      ["tard","late"],["météo","weather"],
+      ["voyage","journey"],["voisin","neighbour"],
+      ["rendez-vous","appointment"],["erreur","mistake"],
+      ["parfois","sometimes"],["souvent","often"],
+      ["jamais","never"],["toujours","always"]
+    ],
+    B1: [
+      ["bien que","although"],["cependant","however"],
+      ["par conséquent","therefore"],["amélioration","improvement"],
+      ["occasion","opportunity"],["environnement","environment"],
+      ["comportement","behaviour"],["réussite","achievement"],
+      ["suggérer","to suggest"],["éviter","to avoid"],
+      ["se rendre compte","to realize"],["réussir","to succeed"],
+      ["échouer","to fail"],["fiable","reliable"],
+      ["conscient","aware"],["disponible","available"],
+      ["nécessaire","necessary"],["relation","relationship"],
+      ["expérience","experience"]
+    ],
+    B2: [
+      ["néanmoins","nevertheless"],["tandis que","whereas"],
+      ["malgré","despite"],["améliorer","to enhance"],
+      ["supposer","to assume"],["convaincre","to convince"],
+      ["évaluer","to assess"],["affirmer","to claim"],
+      ["controversé","controversial"],["précis","accurate"],
+      ["pertinent","relevant"],["considérable","substantial"],
+      ["résultat","outcome"],["preuve","evidence"],
+      ["inconvénient","drawback"],["approche","approach"],
+      ["préoccupation","concern"],["défi","challenge"]
+    ],
+    C1: [
+      ["négligeable","negligible"],["ambigu","ambiguous"],
+      ["saper","to undermine"],["favoriser","to foster"],
+      ["mettre en œuvre","to implement"],["reconnaître","to acknowledge"],
+      ["anticiper","to anticipate"],["se détériorer","to deteriorate"],
+      ["complet","comprehensive"],["inévitable","inevitable"],
+      ["subtil","subtle"],["remarquable","outstanding"],
+      ["trompeur","misleading"],["responsabilité","accountability"],
+      ["contrainte","constraint"],["perspicacité","insight"],
+      ["approfondi","thorough"],["plausible","plausible"]
+    ]
+  },
+
+  Chinese: {
+    A1: [
+      ["hello","你好"],["thank you","谢谢"],["goodbye","再见"],
+      ["I","我"],["you","你"],["he","他"],
+      ["she","她"],["we","我们"],["student","学生"],
+      ["teacher","老师"],["school","学校"],["friend","朋友"],
+      ["water","水"],["tea","茶"],["rice","米饭"],
+      ["book","书"],["person","人"],["family","家"],
+      ["today","今天"],["tomorrow","明天"],
+      ["yesterday","昨天"],["China","中国"],
+      ["France","法国"],["Cameroon","喀麦隆"],
+      ["good","好"],["big","大"],["small","小"],
+      ["one","一"],["two","二"],["three","三"]
+    ],
+    A2: [
+      ["to study","学习"],["to work","工作"],
+      ["to speak","说话"],["to listen","听"],
+      ["to read","读"],["to write","写"],
+      ["to buy","买"],["to sell","卖"],
+      ["to arrive","到"],["to leave","离开"],
+      ["to understand","懂"],["to remember","记得"],
+      ["to forget","忘记"],["beautiful","漂亮"],
+      ["busy","忙"],["tired","累"],
+      ["weather","天气"],["hospital","医院"],
+      ["restaurant","饭馆"],["university","大学"],
+      ["because","因为"],["but","但是"],
+      ["together","一起"],["already","已经"]
+    ],
+    B1: [
+      ["although","虽然"],["however","不过"],
+      ["therefore","因此"],["to improve","提高"],
+      ["opportunity","机会"],["environment","环境"],
+      ["experience","经验"],["to decide","决定"],
+      ["to participate","参加"],["to explain","解释"],
+      ["to prepare","准备"],["to practise","练习"],
+      ["important","重要"],["convenient","方便"],
+      ["careful","认真"],["successful","成功"],
+      ["relationship","关系"],["problem","问题"],
+      ["solution","办法"],["habit","习惯"]
+    ],
+    B2: [
+      ["nevertheless","尽管如此"],["despite","尽管"],
+      ["to analyse","分析"],["to compare","比较"],
+      ["to influence","影响"],["to develop","发展"],
+      ["to consider","考虑"],["to organize","组织"],
+      ["responsibility","责任"],["advantage","优势"],
+      ["disadvantage","缺点"],["possibility","可能性"],
+      ["efficient","有效率"],["appropriate","合适"],
+      ["independent","独立"],["complicated","复杂"],
+      ["discussion","讨论"],["decision","决定"]
+    ],
+    C1: [
+      ["to implement","实施"],["to acknowledge","承认"],
+      ["to anticipate","预料"],["to undermine","削弱"],
+      ["comprehensive","全面"],["inevitable","不可避免"],
+      ["subtle","微妙"],["misleading","误导"],
+      ["accountability","问责"],["constraint","限制"],
+      ["insight","见解"],["thorough","彻底"],
+      ["plausible","合理"],["sustainable","可持续"],
+      ["phenomenon","现象"],["perspective","视角"],
+      ["consequence","后果"],["controversial","有争议"]
+    ]
+  }
+};
+
+/* ---------- QUESTION GENERATION ---------- */
+
+const LEVELS = ["A1","A2","B1","B2","C1"];
+const LANGUAGES = ["French","English","Chinese"];
+
+function shuffled(array) {
+  const a=[...array];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function makeOptions(correct, candidates) {
+  const wrong=shuffled([...new Set(candidates.filter(x=>x!==correct))]).slice(0,3);
+  return shuffled([correct,...wrong]);
+}
+
+function generateLanguageQuestions() {
+  LANGUAGES.forEach(language=>{
+    LEVELS.forEach(level=>{
+      const entries=VOCAB[language][level] || [];
+      entries.forEach((entry,index)=>{
+        const [prompt,answer]=entry;
+        const candidates=entries.map(v=>v[1]);
+
+        addQuestion(
+          "Languages",
+          `In ${language}, what does "${prompt}" mean?`,
+          makeOptions(answer,candidates),
+          answer,
+          `"${prompt}" means "${answer}".`,
+          {language,level,family:`${language}_${level}_${index}`}
+        );
+
+        addQuestion(
+          "Languages",
+          `Which ${language} expression means "${answer}"?`,
+          makeOptions(prompt,entries.map(v=>v[0])),
+          prompt,
+          `"${answer}" corresponds to "${prompt}".`,
+          {language,level,family:`${language}_${level}_${index}`}
+        );
+      });
+    });
+  });
+}
+
+/* ---------- GENERAL KNOWLEDGE ---------- */
+
+const CULTURE_QUESTIONS = [
+ ["What is the capital of Japan?",["Seoul","Tokyo","Beijing","Bangkok"],"Tokyo","Tokyo is the capital of Japan."],
+ ["Which continent is Cameroon in?",["Asia","Europe","Africa","South America"],"Africa","Cameroon is in Central Africa."],
+ ["What is the largest ocean?",["Atlantic","Indian","Arctic","Pacific"],"Pacific","The Pacific Ocean is the largest."],
+ ["Which planet is known as the Red Planet?",["Venus","Mars","Jupiter","Mercury"],"Mars","Iron-rich dust gives Mars its reddish appearance."],
+ ["What is the capital of China?",["Shanghai","Beijing","Wuhan","Shenzhen"],"Beijing","Beijing is China's capital."],
+ ["Which language is mainly spoken in Brazil?",["Spanish","Portuguese","French","English"],"Portuguese","Portuguese is Brazil's official language."],
+ ["How many continents are commonly taught?",["5","6","7","8"],"7","The commonly taught model has seven continents."],
+ ["Which country is famous for the pyramids of Giza?",["Egypt","Mexico","India","Greece"],"Egypt","The pyramids of Giza are in Egypt."],
+ ["What is the currency of Japan?",["Yuan","Won","Yen","Rupee"],"Yen","Japan uses the yen."],
+ ["Which instrument has black and white keys?",["Violin","Piano","Flute","Drum"],"Piano","A piano has a keyboard of black and white keys."],
+ ["Which city is known as the City of Light?",["Rome","Paris","Madrid","Lisbon"],"Paris","Paris is widely known as the City of Light."],
+ ["Which is the smallest independent country?",["Monaco","Vatican City","Malta","Singapore"],"Vatican City","Vatican City is the world's smallest sovereign state."],
+ ["What is the main ingredient in traditional guacamole?",["Tomato","Avocado","Potato","Cucumber"],"Avocado","Avocado is the main ingredient."],
+ ["Which continent contains the Sahara Desert?",["Asia","Africa","Australia","Europe"],"Africa","The Sahara is in northern Africa."],
+ ["What is the capital of Cameroon?",["Douala","Bamenda","Yaoundé","Garoua"],"Yaoundé","Yaoundé is the capital of Cameroon."],
+ ["Which country is shaped like a boot?",["Italy","Norway","Chile","Ghana"],"Italy","Italy is often described as boot-shaped."],
+ ["Which sport uses a shuttlecock?",["Tennis","Badminton","Golf","Rugby"],"Badminton","Badminton is played with a shuttlecock."],
+ ["How many rings are on the Olympic symbol?",["Four","Five","Six","Seven"],"Five","The Olympic symbol has five interlocking rings."],
+ ["Which artist painted the Mona Lisa?",["Van Gogh","Picasso","Leonardo da Vinci","Monet"],"Leonardo da Vinci","Leonardo da Vinci painted the Mona Lisa."],
+ ["What is the capital of Australia?",["Sydney","Melbourne","Canberra","Perth"],"Canberra","Canberra is Australia's capital."]
+];
+
+CULTURE_QUESTIONS.forEach((q,i)=>{
+  addQuestion("Culture",q[0],q[1],q[2],q[3],{family:"culture_"+i});
+});
+
+/* ---------- LOGIC AND PUZZLES ---------- */
+
+const LOGIC_QUESTIONS = [
+ ["What comes next: 2, 4, 6, 8, ...?",["9","10","12","14"],"10","The sequence increases by 2."],
+ ["What comes next: 3, 6, 12, 24, ...?",["30","36","48","42"],"48","Each number is multiplied by 2."],
+ ["Which one does not belong?",["Apple","Banana","Carrot","Orange"],"Carrot","Carrot is a vegetable; the others are fruits."],
+ ["If all roses are flowers, are all flowers roses?",["Yes","No","Only red ones","Cannot exist"],"No","The statement does not say all flowers are roses."],
+ ["A clock shows 3:00. What is the angle between its hands?",["45°","60°","90°","180°"],"90°","At 3:00 the hands form a right angle."],
+ ["What comes next: 1, 1, 2, 3, 5, 8, ...?",["11","12","13","15"],"13","Each term is the sum of the previous two."],
+ ["You have 3 apples and take away 2. How many do you have?",["1","2","3","5"],"2","You took two apples, so you have two."],
+ ["Which number is different: 9, 16, 25, 30, 36?",["9","16","30","36"],"30","All the others are perfect squares."],
+ ["If yesterday was Monday, what day is tomorrow?",["Tuesday","Wednesday","Thursday","Sunday"],"Wednesday","Yesterday Monday means today Tuesday."],
+ ["A farmer has 10 sheep. All but 3 run away. How many remain?",["3","7","10","0"],"3","All but three means three remain."],
+ ["What comes next: 5, 10, 20, 40, ...?",["45","60","80","100"],"80","Each number doubles."],
+ ["Which word is the odd one out?",["Triangle","Square","Circle","Cube"],"Cube","A cube is three-dimensional."],
+ ["If 4 people shake hands once with everyone else, how many handshakes occur?",["4","6","8","12"],"6","There are six unique pairs."],
+ ["A number is greater than 10 and less than 14. It is even. What is it?",["11","12","13","14"],"12","12 is the only even integer between 10 and 14."],
+ ["What comes next: Monday, Wednesday, Friday, ...?",["Saturday","Sunday","Tuesday","Thursday"],"Sunday","The sequence skips one day each time."]
+];
+
+LOGIC_QUESTIONS.forEach((q,i)=>{
+  addQuestion("Logic",q[0],q[1],q[2],q[3],{family:"logic_"+i});
+});
+
+/* ---------- MATHEMATICS ---------- */
+
+const MATH_QUESTIONS = [
+ ["What is 12 × 8?",["86","96","108","88"],"96","12 multiplied by 8 equals 96."],
+ ["Solve: 3x = 21.",["6","7","8","9"],"7","Divide both sides by 3."],
+ ["What is 25% of 200?",["25","40","50","75"],"50","25% is one quarter; one quarter of 200 is 50."],
+ ["What is the square root of 144?",["10","11","12","14"],"12","12 × 12 = 144."],
+ ["What is 2⁵?",["16","24","32","64"],"32","2 multiplied by itself five times is 32."],
+ ["Solve: 15 + 27.",["32","40","42","44"],"42","15 + 27 = 42."],
+ ["What is the perimeter of a square with side 5 cm?",["10 cm","15 cm","20 cm","25 cm"],"20 cm","A square has four equal sides: 4 × 5."],
+ ["Solve: 3|x - 4| = 10. What is the positive solution?",["1/3","22/3","4","10"],"22/3","|x-4|=10/3, so x=4+10/3=22/3."],
+ ["What is the derivative of x²?",["x","2x","x³","2"],"2x","The power rule gives 2x."],
+ ["What is 0.5 expressed as a fraction?",["1/5","1/4","1/2","2/5"],"1/2","0.5 equals one half."],
+ ["What is the sum of the angles in a triangle?",["90°","180°","270°","360°"],"180°","The interior angles of a triangle sum to 180°."],
+ ["Solve: 7² - 5².",["12","20","24","49"],"24","49 - 25 = 24."],
+ ["What is 15% of 80?",["8","10","12","15"],"12","0.15 × 80 = 12."],
+ ["If y = 3x + 2, what is y when x = 4?",["12","14","16","18"],"14","3 × 4 + 2 = 14."],
+ ["What is the mean of 4, 6, and 8?",["5","6","7","8"],"6","(4+6+8)/3 = 6."]
+];
+
+MATH_QUESTIONS.forEach((q,i)=>{
+  addQuestion("Mathematics",q[0],q[1],q[2],q[3],{family:"math_"+i});
+});
+
+/* ---------- SCIENCE AND NATURE ---------- */
+
+const SCIENCE_QUESTIONS = [
+ ["Which gas do plants absorb during photosynthesis?",["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],"Carbon dioxide","Plants use carbon dioxide during photosynthesis."],
+ ["What is the chemical symbol for water?",["CO₂","O₂","H₂O","NaCl"],"H₂O","Water consists of hydrogen and oxygen."],
+ ["Which organ pumps blood around the body?",["Lungs","Brain","Heart","Liver"],"Heart","The heart pumps blood through the circulatory system."],
+ ["How many bones does an adult human typically have?",["106","206","306","406"],"206","An adult skeleton typically has 206 bones."],
+ ["Which planet is closest to the Sun?",["Venus","Earth","Mercury","Mars"],"Mercury","Mercury is the closest planet to the Sun."],
+ ["What force pulls objects toward Earth?",["Magnetism","Friction","Gravity","Electricity"],"Gravity","Gravity attracts objects with mass."],
+ ["What is the boiling point of pure water at sea level?",["50°C","75°C","100°C","150°C"],"100°C","Pure water boils at approximately 100°C at standard pressure."],
+ ["Which part of a cell contains most of its genetic material?",["Nucleus","Membrane","Cytoplasm","Ribosome"],"Nucleus","The nucleus contains most cellular DNA in eukaryotic cells."],
+ ["Which vitamin can the body produce with sunlight exposure?",["Vitamin A","Vitamin B12","Vitamin C","Vitamin D"],"Vitamin D","Sunlight helps the skin produce vitamin D."],
+ ["What is the largest mammal?",["Elephant","Blue whale","Giraffe","Hippopotamus"],"Blue whale","The blue whale is the largest known animal."],
+ ["What is the process of liquid becoming gas called?",["Freezing","Condensation","Evaporation","Melting"],"Evaporation","Evaporation changes a liquid into a gas."],
+ ["Which blood cells help fight infection?",["Red cells","White cells","Platelets","Plasma"],"White cells","White blood cells are part of the immune system."],
+ ["What is the centre of an atom called?",["Electron","Nucleus","Shell","Molecule"],"Nucleus","The nucleus contains protons and neutrons."],
+ ["Which layer protects Earth from much ultraviolet radiation?",["Ozone layer","Crust","Mantle","Core"],"Ozone layer","The ozone layer absorbs much of the Sun's UV radiation."],
+ ["What is the natural satellite of Earth?",["Mars","The Moon","The Sun","Venus"],"The Moon","The Moon is Earth's natural satellite."]
+];
+
+SCIENCE_QUESTIONS.forEach((q,i)=>{
+  addQuestion("Science",q[0],q[1],q[2],q[3],{family:"science_"+i});
+});
+
+/* ---------- SETTINGS AND FILTERING ---------- */
+
+function selectedSettings(prefix) {
+  const checked=id=>document.getElementById(prefix+id)?.checked || false;
+
+  return {
+    packs:{
+      Languages:checked("Languages"),
+      Culture:checked("Culture"),
+      Logic:checked("Logic"),
+      Mathematics:checked("Math"),
+      Science:checked("Science")
+    },
+    languages:{
+      French:checked("French"),
+      English:checked("English"),
+      Chinese:checked("Chinese")
+    },
+    levels:{
+      A1:checked("A1"),
+      A2:checked("A2"),
+      B1:checked("B1"),
+      B2:checked("B2"),
+      C1:checked("C1")
+    }
+  };
+}
+
+function poolForSettings(settings) {
+  return BANK.filter(q=>{
+    if(!settings.packs[q.pack]) return false;
+
+    if(q.pack==="Languages"){
+      if(!settings.languages[q.language]) return false;
+      if(!settings.levels[q.level]) return false;
+    }
+    return true;
+  });
+}
+
+function familyKey(q) {
+  return q.family || q.id;
+}
+
+/* ---------- FIVE-DAY ANTI-REPEAT ---------- */
+
+const HISTORY_KEY="duo_challenge_history_v2";
+
+function localHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function cleanHistory() {
+  const history=localHistory();
+  const cutoff=Date.now()-(5*24*60*60*1000);
+  const cleaned={};
+
+  Object.entries(history).forEach(([key,time])=>{
+    if(Number(time)>cutoff) cleaned[key]=time;
+  });
+
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(cleaned));
+  return cleaned;
+}
+
+function rememberQuestion(q) {
+  const history=cleanHistory();
+  history[familyKey(q)]=Date.now();
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(history));
+}
+
+function availableQuestions(pool) {
+  const history=cleanHistory();
+  return pool.filter(q=>!history[familyKey(q)]);
+}
+
+function balancedShuffle(pool) {
+  const groups={};
+
+  pool.forEach(q=>{
+    const key=q.pack==="Languages"
+      ? q.pack+"_"+q.language+"_"+q.level
+      : q.pack;
+
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(q);
+  });
+
+  Object.values(groups).forEach(shuffled);
+  const result=[];
+
+  while(Object.values(groups).some(g=>g.length)){
+    for(const group of Object.values(groups)){
+      if(group.length) result.push(group.pop());
+    }
+  }
+  return shuffled(result);
+}
+
+/* ---------- BANK INFORMATION ---------- */
+
+function bankStatistics() {
+  const result={
+    total:BANK.length,
+    Languages:0,
+    Culture:0,
+    Logic:0,
+    Mathematics:0,
+    Science:0
+  };
+
+  BANK.forEach(q=>{
+    if(result[q.pack]!==undefined) result[q.pack]++;
+  });
+
+  return result;
+}
+
+console.log("DUO CHALLENGE question bank:",bankStatistics());
+
+</script>
+<!-- PART 3 CONTINUES HERE -->
+
+
+<script>
+/* =========================================
+   DUO CHALLENGE — PART 3
+   SOLO GAME ENGINE
+========================================= */
+
+let soloState = {
+  questions: [],
+  index: 0,
+  score: 0,
+  correct: 0,
+  answered: false,
+  timer: null,
+  seconds: 20,
+  remaining: 20
+};
+
+const SOLO_STATS_KEY = "duo_challenge_solo_stats_v2";
+
+function getSoloStats() {
+  try {
+    return JSON.parse(localStorage.getItem(SOLO_STATS_KEY) || '{"games":0,"best":0,"correct":0}');
+  } catch {
+    return {games:0,best:0,correct:0};
+  }
+}
+
+function saveSoloStats(score, correct) {
+  const stats=getSoloStats();
+  stats.games++;
+  stats.best=Math.max(stats.best,score);
+  stats.correct+=correct;
+  localStorage.setItem(SOLO_STATS_KEY,JSON.stringify(stats));
+  updateHomeStats();
+}
+
+function updateHomeStats() {
+  const stats=getSoloStats();
+
+  const games=document.getElementById("homeGames");
+  const best=document.getElementById("homeBest");
+  const correct=document.getElementById("homeCorrect");
+
+  if(games) games.textContent=stats.games;
+  if(best) best.textContent=stats.best;
+  if(correct) correct.textContent=stats.correct;
+}
+
+function getSoloSettings() {
+  return {
+    packs:{
+      Languages:document.getElementById("soloLanguages").checked,
+      Culture:document.getElementById("soloCulture").checked,
+      Logic:document.getElementById("soloLogic").checked,
+      Mathematics:document.getElementById("soloMath").checked,
+      Science:document.getElementById("soloScience").checked
+    },
+    languages:{
+      French:document.getElementById("soloFrench").checked,
+      English:document.getElementById("soloEnglish").checked,
+      Chinese:document.getElementById("soloChinese").checked
+    },
+    levels:{
+      A1:document.getElementById("soloA1").checked,
+      A2:document.getElementById("soloA2").checked,
+      B1:document.getElementById("soloB1").checked,
+      B2:document.getElementById("soloB2").checked,
+      C1:document.getElementById("soloC1").checked
+    }
+  };
+}
+
+function startSolo() {
+  clearInterval(soloState.timer);
+
+  const settings=getSoloSettings();
+
+  const selectedPack=Object.values(settings.packs).some(Boolean);
+  if(!selectedPack){
+    alert("Please select at least one subject.");
+    return;
+  }
+
+  if(settings.packs.Languages){
+    if(!Object.values(settings.languages).some(Boolean)){
+      alert("Please select at least one language.");
+      return;
+    }
+    if(!Object.values(settings.levels).some(Boolean)){
+      alert("Please select at least one difficulty level.");
+      return;
+    }
+  }
+
+  const pool=poolForSettings(settings);
+  const available=availableQuestions(pool);
+
+  const count=Number(document.getElementById("soloCount").value);
+  const seconds=Number(document.getElementById("soloTime").value);
+
+  if(available.length===0){
+    alert("You have already played all available questions in these subjects during the last five days. Please change your selections or try again later.");
+    return;
+  }
+
+  if(available.length<count){
+    alert(
+      `Only ${available.length} unused questions are available in your selected subjects. The game will use those questions without repeating any.`
+    );
+  }
+
+  soloState={
+    questions:balancedShuffle(available).slice(0,count),
+    index:0,
+    score:0,
+    correct:0,
+    answered:false,
+    timer:null,
+    seconds,
+    remaining:seconds
+  };
+
+  showScreen("soloGameScreen");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  clearInterval(soloState.timer);
+
+  const q=soloState.questions[soloState.index];
+
+  if(!q){
+    finishGame();
+    return;
+  }
+
+  soloState.answered=false;
+  soloState.remaining=soloState.seconds;
+
+  document.getElementById("soloRoundLabel").textContent=
+    `Question ${soloState.index+1} / ${soloState.questions.length}`;
+
+  document.getElementById("soloScore").textContent=soloState.score;
+  document.getElementById("soloCorrect").textContent=soloState.correct;
+
+  document.getElementById("soloCategory").textContent=
+    q.pack==="Languages"
+      ? `${q.language.toUpperCase()} • ${q.level}`
+      : q.pack.toUpperCase();
+
+  document.getElementById("soloQuestion").textContent=q.question;
+
+  document.getElementById("soloProgress").style.width=
+    `${(soloState.index/soloState.questions.length)*100}%`;
+
+  const answers=document.getElementById("soloAnswers");
+  answers.innerHTML="";
+
+  shuffled(q.options).forEach(option=>{
+    const button=document.createElement("button");
+    button.className="answer";
+    button.textContent=option;
+    button.onclick=()=>answer(option);
+    answers.appendChild(button);
+  });
+
+  const feedback=document.getElementById("soloFeedback");
+  feedback.className="feedback";
+  feedback.textContent="";
+
+  document.getElementById("soloNextButton").classList.add("hidden");
+
+  updateSoloTimerDisplay();
+
+  soloState.timer=setInterval(()=>{
+    if(soloState.answered){
+      clearInterval(soloState.timer);
+      return;
+    }
+
+    soloState.remaining--;
+    updateSoloTimerDisplay();
+
+    if(soloState.remaining<=0){
+      clearInterval(soloState.timer);
+      answer(null);
+    }
+  },1000);
+}
+
+function updateSoloTimerDisplay() {
+  const timer=document.getElementById("soloTimer");
+  timer.textContent=soloState.remaining+"s";
+  timer.style.color=soloState.remaining<=5
+    ? "var(--red)"
+    : "var(--cyan)";
+}
+
+function correct(q,value) {
+  return String(value).trim().toLowerCase()===
+    String(q.answer).trim().toLowerCase();
+}
+
+function answer(value) {
+  if(soloState.answered) return;
+
+  soloState.answered=true;
+  clearInterval(soloState.timer);
+
+  const q=soloState.questions[soloState.index];
+  const isCorrect=value!==null && correct(q,value);
+
+  rememberQuestion(q);
+
+  if(isCorrect){
+    const bonus=Math.max(0,Math.floor(soloState.remaining/5));
+    soloState.score+=10+bonus;
+    soloState.correct++;
+  }
+
+  displayAnswer(q,value,isCorrect);
+}
+
+function displayAnswer(q,value,isCorrect) {
+  const buttons=document.querySelectorAll("#soloAnswers .answer");
+
+  buttons.forEach(button=>{
+    button.disabled=true;
+
+    if(button.textContent===q.answer){
+      button.classList.add("correct");
+    } else if(value!==null && button.textContent===value && !isCorrect){
+      button.classList.add("wrong");
+    }
+  });
+
+  document.getElementById("soloScore").textContent=soloState.score;
+  document.getElementById("soloCorrect").textContent=soloState.correct;
+
+  const feedback=document.getElementById("soloFeedback");
+  feedback.className="feedback show "+(isCorrect?"good":"bad");
+
+  if(value===null){
+    feedback.textContent=`Time is up! The correct answer was: ${q.answer}. ${q.explanation}`;
+  } else if(isCorrect){
+    feedback.textContent=`Correct! +${10+Math.max(0,Math.floor(soloState.remaining/5))} points. ${q.explanation}`;
+  } else {
+    feedback.textContent=`Not quite! The correct answer is: ${q.answer}. ${q.explanation}`;
+  }
+
+  const next=document.getElementById("soloNextButton");
+  next.classList.remove("hidden");
+
+  next.textContent=soloState.index===soloState.questions.length-1
+    ? "SEE MY RESULTS →"
+    : "NEXT QUESTION →";
+}
+
+function nextSolo() {
+  if(!soloState.answered) return;
+
+  soloState.index++;
+
+  if(soloState.index>=soloState.questions.length){
+    finishGame();
+  } else {
+    renderQuestion();
+  }
+}
+
+function finishGame() {
+  clearInterval(soloState.timer);
+
+  saveSoloStats(soloState.score,soloState.correct);
+
+  const total=soloState.questions.length;
+  const percentage=total
+    ? Math.round((soloState.correct/total)*100)
+    : 0;
+
+  document.getElementById("resultTitle").textContent=
+    percentage>=80?"EXCELLENT WORK!":
+    percentage>=50?"GOOD JOB!":"KEEP PRACTISING!";
+
+  document.getElementById("resultSubtitle").textContent=
+    `You answered ${soloState.correct} out of ${total} questions correctly (${percentage}%).`;
+
+  document.getElementById("resultName1").textContent="Your score";
+  document.getElementById("resultScore1").textContent=soloState.score;
+  document.getElementById("resultName2").textContent="Correct answers";
+  document.getElementById("resultScore2").textContent=
+    `${soloState.correct}/${total}`;
+
+  showScreen("resultScreen");
+}
+
+function playAgain() {
+  showScreen("soloSetupScreen");
+}
+
+function exitGame() {
+  clearInterval(soloState.timer);
+  showScreen("homeScreen");
+  updateHomeStats();
+}
+
+/* Initial home statistics */
+updateHomeStats();
+
+/* Language option visibility */
+document.getElementById("soloLanguages").addEventListener("change",function(){
+  document.getElementById("soloLanguageOptions")
+    .classList.toggle("hidden",!this.checked);
+});
+</script>
+
+<!-- PART 4 CONTINUES HERE -->
+
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getDatabase, ref, set, get, update, onValue, runTransaction, remove } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+/* =========================================
+   DUO CHALLENGE — PART 4
+   FIREBASE ONLINE MULTIPLAYER
+========================================= */
 
-/* Firebase project configuration */
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+
+import {
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  update,
+  onValue,
+  runTransaction,
+  remove
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+/* ---------- FIREBASE CONFIGURATION ---------- */
+
 const firebaseConfig = {
   apiKey: "AIzaSyDq2lbJiPiOc1UtMKU2o1CtTkQMmC5kz2k",
   authDomain: "duo-challenge-8ca08.firebaseapp.com",
@@ -199,249 +1259,1482 @@ const firebaseConfig = {
   appId: "1:1019955581561:web:6fab80e8409f49579b3aa8"
 };
 
-const $ = id => document.getElementById(id);
-const categories = ["All subjects","Chinese","English","French","Mathematics","Computer Science","C Programming","General Knowledge","Logic"];
-const bank = [
-{ id:"zh1",c:"Chinese",l:"Easy",t:"mcq",q:"What does 你好 mean?",o:["Goodbye","Hello","Thank you","Sorry"],a:1,e:"你好 (nǐ hǎo) means hello."},
-{ id:"zh2",c:"Chinese",l:"Easy",t:"text",q:"Write the Chinese word for 'thank you'.",a:"谢谢",e:"谢谢 (xièxie) means thank you."},
-{ id:"zh3",c:"Chinese",l:"Easy",t:"mcq",q:"What is the meaning of 我?",o:["You","He","I / me","We"],a:2,e:"我 (wǒ) means I or me."},
-{ id:"zh4",c:"Chinese",l:"Medium",t:"mcq",q:"Which number is 八?",o:["Six","Seven","Eight","Nine"],a:2,e:"八 (bā) is the number eight."},
-{ id:"zh5",c:"Chinese",l:"Medium",t:"text",q:"How do you say 'I am a student' in Chinese?",a:"我是学生",e:"我是学生 (wǒ shì xuésheng)."},
-{ id:"zh6",c:"Chinese",l:"Medium",t:"mcq",q:"What does 再见 mean?",o:["Welcome","Goodbye","Good morning","Please"],a:1,e:"再见 (zàijiàn) means goodbye."},
-{ id:"zh7",c:"Chinese",l:"Hard",t:"mcq",q:"Which particle commonly marks a completed action?",o:["吗","了","的","呢"],a:1,e:"了 (le) often marks a completed action or change of state."},
-{ id:"zh8",c:"Chinese",l:"Hard",t:"text",q:"Write the Chinese character for 'person'.",a:"人",e:"人 (rén) means person."},
-{ id:"en1",c:"English",l:"Easy",t:"mcq",q:"Choose the correct sentence.",o:["She go to school.","She goes to school.","She going school.","She gone to school."],a:1,e:"With he, she or it in the present simple, add -s to most verbs."},
-{ id:"en2",c:"English",l:"Easy",t:"text",q:"What is the past tense of 'go'?",a:"went",e:"Go → went."},
-{ id:"en3",c:"English",l:"Easy",t:"mcq",q:"Which word is an adjective?",o:["Quickly","Beautiful","Run","Happiness"],a:1,e:"Beautiful describes a noun, so it is an adjective."},
-{ id:"en4",c:"English",l:"Medium",t:"mcq",q:"Choose the correct form: 'I have lived here ___ 2024.'",o:["for","since","during","from"],a:1,e:"Use since with a starting point in time."},
-{ id:"en5",c:"English",l:"Medium",t:"text",q:"What is the comparative form of 'good'?",a:"better",e:"Good → better → best."},
-{ id:"en6",c:"English",l:"Hard",t:"mcq",q:"Which sentence is in the passive voice?",o:["They built the bridge.","The bridge was built.","They are building it.","They build bridges."],a:1,e:"The subject receives the action: was built."},
-{ id:"fr1",c:"French",l:"Easy",t:"mcq",q:"Quel est le contraire de 'rapide' ?",o:["Lent","Fort","Grand","Léger"],a:0,e:"Le contraire de rapide est lent."},
-{ id:"fr2",c:"French",l:"Easy",t:"text",q:"Conjugue 'être' avec 'nous' au présent.",a:"sommes",e:"Nous sommes."},
-{ id:"fr3",c:"French",l:"Medium",t:"mcq",q:"Quel mot est un adverbe ?",o:["Heureux","Heureusement","Bonheur","Heureuse"],a:1,e:"Heureusement est un adverbe."},
-{ id:"fr4",c:"French",l:"Medium",t:"mcq",q:"Quelle phrase est correctement écrite ?",o:["Ils son arrivé.","Ils sont arrivés.","Ils sont arriver.","Il sont arrivés."],a:1,e:"Ils sont arrivés : auxiliaire être et accord du participe passé."},
-{ id:"fr5",c:"French",l:"Hard",t:"text",q:"Quel est le pluriel de 'cheval' ?",a:"chevaux",e:"Cheval devient chevaux au pluriel."},
-{ id:"ma1",c:"Mathematics",l:"Easy",t:"mcq",q:"What is 12 × 8?",o:["86","92","96","108"],a:2,e:"12 × 8 = 96."},
-{ id:"ma2",c:"Mathematics",l:"Easy",t:"text",q:"Solve: 3x = 21. What is x?",a:"7",e:"Divide both sides by 3: x = 7."},
-{ id:"ma3",c:"Mathematics",l:"Medium",t:"mcq",q:"What is the derivative of x²?",o:["x","2x","x³","2"],a:1,e:"Using the power rule, the derivative of x² is 2x."},
-{ id:"ma4",c:"Mathematics",l:"Medium",t:"mcq",q:"What is the value of √144?",o:["10","11","12","14"],a:2,e:"12 × 12 = 144."},
-{ id:"ma5",c:"Mathematics",l:"Hard",t:"text",q:"What is the derivative of 5x³?",a:"15x^2",e:"Apply the power rule: 5 × 3x² = 15x²."},
-{ id:"ma6",c:"Mathematics",l:"Hard",t:"mcq",q:"What is the limit of 1/x as x approaches positive infinity?",o:["1","0","Infinity","-1"],a:1,e:"As x becomes very large, 1/x approaches zero."},
-{ id:"cs1",c:"Computer Science",l:"Easy",t:"mcq",q:"What does CPU stand for?",o:["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User"],a:0,e:"CPU means Central Processing Unit."},
-{ id:"cs2",c:"Computer Science",l:"Easy",t:"truefalse",q:"RAM is usually temporary memory.",a:true,e:"RAM is volatile memory: its contents are lost when power is off."},
-{ id:"cs3",c:"Computer Science",l:"Medium",t:"mcq",q:"Which one is an operating system?",o:["Python","Windows","HTML","Google"],a:1,e:"Windows is an operating system."},
-{ id:"cs4",c:"Computer Science",l:"Medium",t:"mcq",q:"What is the binary representation of decimal 5?",o:["101","110","111","100"],a:0,e:"5 in binary is 101."},
-{ id:"cs5",c:"Computer Science",l:"Hard",t:"mcq",q:"What does HTTPS mainly add to HTTP?",o:["Image compression","Encrypted communication","More storage","A faster CPU"],a:1,e:"HTTPS uses encryption through TLS to protect communication."},
-{ id:"c1",c:"C Programming",l:"Easy",t:"mcq",q:"Which symbol ends most C statements?",o:[".",",","; ",":"],a:2,e:"A semicolon ends most C statements."},
-{ id:"c2",c:"C Programming",l:"Easy",t:"mcq",q:"Which function prints formatted output in C?",o:["scanf()","printf()","main()","input()"],a:1,e:"printf() displays formatted output."},
-{ id:"c3",c:"C Programming",l:"Medium",t:"mcq",q:"Which format specifier is commonly used for an int?",o:["%f","%c","%d","%s"],a:2,e:"%d is commonly used for an int."},
-{ id:"c4",c:"C Programming",l:"Medium",t:"truefalse",q:"In C, array indexing normally starts at 0.",a:true,e:"The first element of an array has index 0."},
-{ id:"c5",c:"C Programming",l:"Hard",t:"mcq",q:"What is the value of 7 % 3 in C?",o:["0","1","2","3"],a:1,e:"The modulo operator returns the remainder: 7 divided by 3 leaves 1."},
-{ id:"c6",c:"C Programming",l:"Hard",t:"text",q:"Which C keyword is used to return a value from a function?",a:"return",e:"The return statement sends a value back to the caller."},
-{ id:"g1",c:"General Knowledge",l:"Easy",t:"mcq",q:"What is the capital of Japan?",o:["Seoul","Tokyo","Beijing","Bangkok"],a:1,e:"Tokyo is the capital of Japan."},
-{ id:"g2",c:"General Knowledge",l:"Easy",t:"mcq",q:"How many days are there in a leap year?",o:["364","365","366","367"],a:2,e:"A leap year has 366 days."},
-{ id:"g3",c:"General Knowledge",l:"Medium",t:"mcq",q:"Which planet is known as the Red Planet?",o:["Venus","Mars","Jupiter","Mercury"],a:1,e:"Mars appears reddish because of iron oxide on its surface."},
-{ id:"g4",c:"General Knowledge",l:"Medium",t:"mcq",q:"Which ocean is the largest?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,e:"The Pacific Ocean is the largest."},
-{ id:"g5",c:"General Knowledge",l:"Hard",t:"mcq",q:"Which element has the chemical symbol Fe?",o:["Fluorine","Iron","Francium","Lead"],a:1,e:"Fe comes from the Latin name ferrum, meaning iron."},
-{ id:"g6",c:"General Knowledge",l:"Hard",t:"truefalse",q:"The human body has 206 bones in a typical adult.",a:true,e:"A typical adult human skeleton has 206 bones."},
-{ id:"lo1",c:"Logic",l:"Easy",t:"mcq",q:"What comes next: 2, 4, 6, 8, ...?",o:["9","10","12","14"],a:1,e:"The sequence increases by 2."},
-{ id:"lo2",c:"Logic",l:"Easy",t:"mcq",q:"If all cats are animals, which statement must be true?",o:["All animals are cats","Every cat is an animal","No cats are animals","All animals are pets"],a:1,e:"This repeats the given relationship."},
-{ id:"lo3",c:"Logic",l:"Medium",t:"mcq",q:"A clock shows 3:00. What is the angle between its hands?",o:["45°","60°","90°","120°"],a:2,e:"At 3:00, the hands form a right angle: 90°."},
-{ id:"lo4",c:"Logic",l:"Medium",t:"text",q:"Complete the pattern: 1, 1, 2, 3, 5, 8, ...",a:"13",e:"Each number is the sum of the previous two."},
-{ id:"lo5",c:"Logic",l:"Hard",t:"mcq",q:"If yesterday was Monday, what day is tomorrow?",o:["Tuesday","Wednesday","Thursday","Sunday"],a:1,e:"Yesterday Monday means today Tuesday and tomorrow Wednesday."},
-{ id:"lo6",c:"Logic",l:"Hard",t:"mcq",q:"A farmer has 17 sheep. All but 9 run away. How many remain?",o:["8","9","17","0"],a:1,e:"All but 9 means 9 remain."}
-];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-let app,auth,db,uid=null,online=false;
-let mode="solo",playerName="Player",roomId=null,roomData=null,isHost=false;
-let questions=[],index=0,score=0,answered=false,timerValue=20,timerInterval=null;
-let soloCategory="All subjects",soloLevel="all",lastSolo=[];
-let roomUnsub=null,roomTimer=null;
+let currentUser = null;
+let currentRoomCode = null;
+let currentRoom = null;
+let roomUnsubscribe = null;
 
-function setConnection(message,kind="warn"){ $("connection").textContent=message;$("connection").className="status "+kind; }
-try{
- app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
- signInAnonymously(auth).catch(e=>setConnection("Online mode unavailable. Solo mode is still available.","warn"));
- onAuthStateChanged(auth,user=>{if(user){uid=user.uid;online=true;setConnection("Online services connected. Duo mode is ready.","good")}});
-}catch(e){setConnection("Could not connect to online services. Solo mode is still available.","warn");}
+let duoPlayerName = "";
+let duoIsHost = false;
 
-function show(id){["home","soloSetup","duoSetup","lobby","game","results"].forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");}
-function goHome(){clearInterval(timerInterval);if(roomUnsub){roomUnsub();roomUnsub=null}show("home");}
-window.goHome=goHome;
-window.showSoloSetup=()=>{show("soloSetup");};
-window.showDuoSetup=()=>{show("duoSetup");};
-categories.forEach(c=>{let o=document.createElement("option");o.value=c;o.textContent=c;$("soloCategory").appendChild(o)});
+const connectionStatus =
+  document.getElementById("connectionStatus");
 
-function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function norm(s){return String(s??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.!?。！？，,]/g,"").replace(/\s+/g," ")}
-function historyGet(){try{return JSON.parse(localStorage.getItem("dcPlayed")||"{}")}catch{return {}}}
-function historySave(id){let h=historyGet();h[id]=Date.now();localStorage.setItem("dcPlayed",JSON.stringify(h))}
-function recentIds(){let h=historyGet(),cut=Date.now()-5*24*60*60*1000;return new Set(Object.keys(h).filter(k=>h[k]>cut))}
-function makeQuestionSet(cat,level,count=10,excluded=[]){
- let pool=bank.filter(q=>(cat==="All subjects"||q.c===cat)&&(level==="all"||q.l===level)&&!excluded.includes(q.id));
- if(pool.length<Math.min(count,5))pool=bank.filter(q=>(cat==="All subjects"||q.c===cat)&&(level==="all"||q.l===level));
- return shuffle(pool).slice(0,count);
+function setConnectionStatus(message, color) {
+  connectionStatus.textContent = message;
+  if(color) connectionStatus.style.color = color;
 }
-window.startSolo=()=>{
- playerName=$("soloName").value.trim()||"Player";soloCategory=$("soloCategory").value;soloLevel=$("soloLevel").value;
- let recent=recentIds();questions=makeQuestionSet(soloCategory,soloLevel,10,[...recent]);
- if(!questions.length){alert("No questions found for this selection.");return}
- if(questions.every(q=>recent.has(q.id)))alert("You have recently played these questions. Some questions may repeat because this category has a small question pool.");
- questions.forEach(q=>historySave(q.id));
- mode="solo";score=0;index=0;show("game");renderQuestion();
-};
-function renderQuestion(){
- clearInterval(timerInterval);answered=false;timerValue=20;
- let q=questions[index];if(!q){finishGame();return}
- $("modeLabel").textContent=mode==="solo"?"SOLO MODE":"DUO MODE";
- $("qNumber").textContent=index+1;$("qTotal").textContent=questions.length;
- $("progressBar").style.width=(index/questions.length*100)+"%";
- $("categoryLabel").textContent=q.c.toUpperCase();$("levelLabel").textContent=q.l.toUpperCase()+" LEVEL";
- $("questionText").textContent=q.q;$("timer").textContent=timerValue;
- $("feedback").innerHTML="";$("explanation").textContent="";
- $("answerArea").innerHTML="";$("gameActions").innerHTML="";
- if(q.t==="mcq"){
-  q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.onclick=()=>answer(i);$("answerArea").appendChild(b)});
- }else if(q.t==="truefalse"){
-  ["True","False"].forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.onclick=()=>answer(i===0);$("answerArea").appendChild(b)});
- }else{
-  $("answerArea").style.gridTemplateColumns="1fr";
-  let inp=document.createElement("input");inp.id="typedAnswer";inp.placeholder="Type your answer here...";
-  let b=document.createElement("button");b.textContent="SUBMIT ANSWER";b.onclick=()=>answer(inp.value);
-  $("answerArea").append(inp,b);
- }
- updateScores();
- timerInterval=setInterval(()=>{if(answered)return;timerValue--;$("timer").textContent=timerValue;if(timerValue<=0){clearInterval(timerInterval);if(mode==="solo")answer("__TIME_UP__");else $("feedback").textContent="Time is up! Submit an answer to continue."}},1000);
-}
-function isCorrect(q,value){
- if(value==="__TIME_UP__")return false;
- if(q.t==="mcq")return Number(value)===q.a;
- if(q.t==="truefalse")return value===q.a;
- return norm(value)===norm(q.a);
-}
-function answer(value){
- if(answered)return;let q=questions[index],ok=isCorrect(q,value);
- if(mode==="solo"){
-  answered=true;clearInterval(timerInterval);if(ok)score+=10;
-  showFeedback(q,ok);updateScores();
-  let b=document.createElement("button");b.textContent=index===questions.length-1?"SEE RESULTS":"NEXT QUESTION";b.onclick=nextSolo;$("gameActions").appendChild(b);
- }else submitDuoAnswer(value,ok);
-}
-function showFeedback(q,ok){
- $("feedback").className="feedback "+(ok?"good":"bad");
- $("feedback").textContent=ok?"Correct! +10 points":"Not quite. The correct answer is: "+(q.t==="mcq"?q.o[q.a]:q.t==="truefalse"?(q.a?"True":"False"):q.a);
- $("explanation").textContent=q.e||"";
-}
-function updateScores(){
- if(mode==="solo"){$("scoreBoard").innerHTML=`<div class="player"><strong>${escapeHTML(playerName)}</strong>${score} points</div>`}
- else if(roomData){$("scoreBoard").innerHTML=Object.values(roomData.players||{}).map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong>${p.score||0} points</div>`).join("")}
-}
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function nextSolo(){index++;if(index>=questions.length)finishGame();else renderQuestion()}
-function finishGame(){
- clearInterval(timerInterval);show("results");$("resultTitle").textContent="CHALLENGE COMPLETE!";
- $("resultText").textContent=mode==="solo"?`${playerName}, you scored ${score} points!`:"The duo challenge has ended.";
- if(mode==="solo")$("finalScores").innerHTML=`<div class="player"><strong>${escapeHTML(playerName)}</strong>${score} points</div>`;
- else if(roomData)$("finalScores").innerHTML=Object.values(roomData.players||{}).map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong>${p.score||0} points</div>`).join("");
-}
-window.playAgain=()=>{if(mode==="solo")startSolo();else goHome()};
-window.exitGame=()=>{if(mode==="duo")leaveRoom();else goHome()};
 
-/* DUO ROOM FUNCTIONS */
-function makeCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
-function requireOnline(){if(!online||!uid||!db){alert("Online connection is not ready. Please wait a moment and try again. Solo mode works without it.");return false}return true}
-window.createRoom=async()=>{
- if(!requireOnline())return;
- playerName=$("duoName").value.trim()||"Player";
- try{
-  let code=makeCode(),roomRef=ref(db,"rooms/"+code);
-  let initial={host:uid,status:"waiting",round:0,questionIds:[],players:{[uid]:{name:playerName,score:0,joinedAt:Date.now()}},answers:{}};
-  await set(roomRef,initial);roomId=code;isHost=true;listenRoom();show("lobby");
- }catch(e){alert("Could not create the room: "+e.message)}
+/* ---------- ANONYMOUS AUTHENTICATION ---------- */
+
+let authReadyResolve;
+
+const authReady = new Promise(resolve=>{
+  authReadyResolve=resolve;
+});
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    currentUser=user;
+    setConnectionStatus("● Online", "var(--green)");
+    authReadyResolve(user);
+  } else {
+    try {
+      await signInAnonymously(auth);
+    } catch(error) {
+      console.error(error);
+      setConnectionStatus("● Connection error", "var(--red)");
+      authReadyResolve(null);
+    }
+  }
+});
+
+async function requireOnline() {
+  if(currentUser) return currentUser;
+
+  setConnectionStatus("● Connecting...", "var(--cyan)");
+
+  const user=await authReady;
+
+  if(!user){
+    throw new Error("Unable to connect to the online service.");
+  }
+
+  return user;
+}
+
+/* ---------- ROOM HELPERS ---------- */
+
+function makeCode() {
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code="";
+
+  for(let i=0;i<6;i++){
+    code+=chars[Math.floor(Math.random()*chars.length)];
+  }
+
+  return code;
+}
+
+function roomRef(code) {
+  return ref(db,`rooms/${code}`);
+}
+
+function playerRef(code,uid) {
+  return ref(db,`rooms/${code}/players/${uid}`);
+}
+
+function duoSettingsFromForm() {
+  return {
+    packs:{
+      Languages:document.getElementById("duoPackLanguages").checked,
+      Culture:document.getElementById("duoPackCulture").checked,
+      Logic:document.getElementById("duoPackLogic").checked,
+      Mathematics:document.getElementById("duoPackMath").checked,
+      Science:document.getElementById("duoPackScience").checked
+    },
+    languages:{
+      French:document.getElementById("duoFrench").checked,
+      English:document.getElementById("duoEnglish").checked,
+      Chinese:document.getElementById("duoChinese").checked
+    },
+    levels:{
+      A1:document.getElementById("duoA1").checked,
+      A2:document.getElementById("duoA2").checked,
+      B1:document.getElementById("duoB1").checked,
+      B2:document.getElementById("duoB2").checked,
+      C1:document.getElementById("duoC1").checked
+    }
+  };
+}
+
+function validateDuoSettings(settings) {
+  if(!Object.values(settings.packs).some(Boolean)){
+    throw new Error("Select at least one subject.");
+  }
+
+  if(settings.packs.Languages){
+    if(!Object.values(settings.languages).some(Boolean)){
+      throw new Error("Select at least one language.");
+    }
+
+    if(!Object.values(settings.levels).some(Boolean)){
+      throw new Error("Select at least one level.");
+    }
+  }
+}
+
+/* ---------- CREATE ROOM ---------- */
+
+async function createRoom() {
+  try {
+    const user=await requireOnline();
+
+    const settings=duoSettingsFromForm();
+    validateDuoSettings(settings);
+
+    const count=Number(document.getElementById("duoCount").value);
+    const seconds=Number(document.getElementById("duoTime").value);
+    const selectedMode=document.getElementById("duoMode").value;
+
+    const name=prompt("Enter your player name:");
+
+    if(!name || !name.trim()){
+      alert("Please enter a player name.");
+      return;
+    }
+
+    duoPlayerName=name.trim().slice(0,18);
+    duoIsHost=true;
+
+    let code=makeCode();
+    let attempts=0;
+
+    while(attempts<5){
+      const snapshot=await get(roomRef(code));
+
+      if(!snapshot.exists()) break;
+
+      code=makeCode();
+      attempts++;
+    }
+
+    const roomData={
+      code,
+      host:user.uid,
+      status:"waiting",
+      createdAt:Date.now(),
+      settings,
+      mode:selectedMode,
+      questionCount:count,
+      seconds,
+      round:0,
+      roundStartedAt:0,
+      questions:[],
+      scores:{},
+      streaks:{},
+      lives:{},
+      answers:{},
+      resolved:{},
+      players:{
+        [user.uid]:{
+          name:duoPlayerName,
+          joinedAt:Date.now(),
+          ready:true
+        }
+      }
+    };
+
+    await set(roomRef(code),roomData);
+
+    currentRoomCode=code;
+
+    listenRoom(code);
+
+    showScreen("lobbyScreen");
+
+  } catch(error) {
+    console.error(error);
+    alert(error.message || "Could not create the room.");
+  }
+}
+
+/* ---------- JOIN ROOM ---------- */
+
+async function joinRoom() {
+  try {
+    const user=await requireOnline();
+
+    const name=document.getElementById("joinName").value.trim();
+    const code=document.getElementById("joinCode").value.trim().toUpperCase();
+
+    if(!name){
+      alert("Enter your player name.");
+      return;
+    }
+
+    if(!/^[A-Z0-9]{6}$/.test(code)){
+      alert("Enter a valid 6-character room code.");
+      return;
+    }
+
+    const snapshot=await get(roomRef(code));
+
+    if(!snapshot.exists()){
+      alert("This room does not exist.");
+      return;
+    }
+
+    const room=snapshot.val();
+
+    if(room.status!=="waiting"){
+      alert("This challenge has already started.");
+      return;
+    }
+
+    const players=room.players || {};
+
+    if(players[user.uid]){
+      duoPlayerName=players[user.uid].name;
+      duoIsHost=room.host===user.uid;
+    } else {
+      if(Object.keys(players).length>=2){
+        alert("This room is full.");
+        return;
+      }
+
+      duoPlayerName=name.slice(0,18);
+      duoIsHost=false;
+
+      await set(playerRef(code,user.uid),{
+        name:duoPlayerName,
+        joinedAt:Date.now(),
+        ready:true
+      });
+    }
+
+    currentRoomCode=code;
+    listenRoom(code);
+    showScreen("lobbyScreen");
+
+  } catch(error) {
+    console.error(error);
+    alert(error.message || "Could not join the room.");
+  }
+}
+
+/* ---------- REAL-TIME ROOM LISTENER ---------- */
+
+function listenRoom(code) {
+  if(roomUnsubscribe){
+    roomUnsubscribe();
+    roomUnsubscribe=null;
+  }
+
+  roomUnsubscribe=onValue(roomRef(code),snapshot=>{
+    if(!snapshot.exists()){
+      alert("The room has been closed.");
+      currentRoom=null;
+      currentRoomCode=null;
+      showScreen("homeScreen");
+      return;
+    }
+
+    currentRoom=snapshot.val();
+
+    if(currentRoom.status==="waiting"){
+      renderLobby();
+    }
+
+    if(currentRoom.status==="playing"){
+      if(typeof window.handleDuoRoomUpdate==="function"){
+        window.handleDuoRoomUpdate(currentRoom);
+      }
+    }
+
+    if(currentRoom.status==="finished"){
+      if(typeof window.showDuoResults==="function"){
+        window.showDuoResults(currentRoom);
+      }
+    }
+  });
+}
+
+/* ---------- LOBBY DISPLAY ---------- */
+
+function renderLobby() {
+  if(!currentRoom) return;
+
+  document.getElementById("roomCodeDisplay").textContent=
+    currentRoom.code;
+
+  const players=Object.values(currentRoom.players || {});
+
+  document.getElementById("lobbyPlayer1").textContent=
+    players[0]?.name || "Waiting...";
+
+  document.getElementById("lobbyPlayer2").textContent=
+    players[1]?.name || "Waiting...";
+
+  const startButton=document.getElementById("startDuoButton");
+
+  const ready=players.length===2;
+  const host=currentRoom.host===currentUser?.uid;
+
+  if(host && ready){
+    startButton.classList.remove("hidden");
+    document.getElementById("lobbyMessage").textContent=
+      "Both players are connected. You can start the challenge!";
+  } else if(host){
+    startButton.classList.add("hidden");
+    document.getElementById("lobbyMessage").textContent=
+      "Share the room code with your friend.";
+  } else {
+    startButton.classList.add("hidden");
+    document.getElementById("lobbyMessage").textContent=
+      "Connected! Waiting for the host to start.";
+  }
+}
+
+/* ---------- COPY ROOM CODE ---------- */
+
+async function copyRoomCode() {
+  if(!currentRoomCode) return;
+
+  try {
+    await navigator.clipboard.writeText(currentRoomCode);
+    alert("Room code copied!");
+  } catch {
+    prompt("Copy your room code:",currentRoomCode);
+  }
+}
+
+/* ---------- LEAVE ROOM ---------- */
+
+async function leaveRoom() {
+  if(!currentRoomCode || !currentUser){
+    showScreen("homeScreen");
+    return;
+  }
+
+  const code=currentRoomCode;
+  const uid=currentUser.uid;
+
+  try {
+    if(roomUnsubscribe){
+      roomUnsubscribe();
+      roomUnsubscribe=null;
+    }
+
+    if(currentRoom?.host===uid){
+      await remove(roomRef(code));
+    } else {
+      await remove(playerRef(code,uid));
+    }
+  } catch(error) {
+    console.error("Leave room error:",error);
+  }
+
+  currentRoomCode=null;
+  currentRoom=null;
+  duoIsHost=false;
+
+  showScreen("homeScreen");
+}
+
+/* ---------- GLOBAL ACCESS ---------- */
+
+window.createRoom=createRoom;
+window.joinRoom=joinRoom;
+window.copyRoomCode=copyRoomCode;
+window.leaveRoom=leaveRoom;
+
+window.getCurrentRoom=()=>currentRoom;
+window.getCurrentRoomCode=()=>currentRoomCode;
+window.getCurrentUser=()=>currentUser;
+window.getDuoPlayerName=()=>duoPlayerName;
+window.getDuoIsHost=()=>duoIsHost;
+
+window.firebaseDuo={
+  db,
+  ref,
+  set,
+  get,
+  update,
+  onValue,
+  runTransaction,
+  remove,
+  roomRef,
+  playerRef
 };
-window.joinRoom=async()=>{
- if(!requireOnline())return;
- playerName=$("duoName").value.trim()||"Player";let code=$("joinCode").value.trim().toUpperCase();
- if(!/^[A-Z0-9]{6}$/.test(code)){alert("Please enter a valid 6-character room code.");return}
- try{
-  let roomRef=ref(db,"rooms/"+code),snap=await get(roomRef);
-  if(!snap.exists()){alert("Room not found. Check the code and try again.");return}
-  let data=snap.val();if(Object.keys(data.players||{}).length>=2&&!data.players[uid]){alert("This room already has two players.");return}
-  if(data.status==="playing"&&!data.players[uid]){alert("This game has already started.");return}
-  await update(ref(db,"rooms/"+code+"/players/"+uid),{name:playerName,score:0,joinedAt:Date.now()});
-  roomId=code;isHost=data.host===uid;listenRoom();show(data.status==="playing"?"game":"lobby");
- }catch(e){alert("Could not join the room: "+e.message)}
-};
-function listenRoom(){
- if(roomUnsub)roomUnsub();
- roomUnsub=onValue(ref(db,"rooms/"+roomId),snap=>{
-  if(!snap.exists()){alert("This room no longer exists.");goHome();return}
-  roomData=snap.val();
-  if(roomData.status==="waiting"){show("lobby");renderLobby()}
-  else if(roomData.status==="playing"){show("game");renderDuoQuestion()}
-  else if(roomData.status==="finished"){finishGame()}
- });
-}
-function renderLobby(){
- $("roomCode").textContent=roomId;
- let ps=Object.values(roomData.players||{});
- $("lobbyPlayers").innerHTML=ps.map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong><span class="small">Ready to play</span></div>`).join("");
- $("lobbyMessage").textContent=ps.length<2?"Waiting for your friend to join...":"Both players are here. The host can start the game!";
- $("startDuo").disabled=!(isHost&&ps.length===2);
-}
-window.copyRoomCode=async()=>{try{await navigator.clipboard.writeText(roomId);alert("Room code copied!")}catch{alert("Your room code is: "+roomId)}};
-window.startDuoGame=async()=>{
- if(!isHost||!roomData||Object.keys(roomData.players||{}).length!==2)return;
- let history=roomData.history||{};
- let recent=Object.keys(history).filter(id=>Date.now()-history[id]<5*24*60*60*1000);
- let chosen=makeQuestionSet("All subjects","all",10,recent);
- if(chosen.length<5)chosen=makeQuestionSet("All subjects","all",10,[]);
- let ids=chosen.map(q=>q.id),updates={status:"playing",round:0,questionIds:ids,answers:{}};
- ids.forEach(id=>history[id]=Date.now());updates.history=history;
- await update(ref(db,"rooms/"+roomId),updates);
-};
-function currentDuoQuestion(){let id=roomData?.questionIds?.[roomData.round];return bank.find(q=>q.id===id)}
-function renderDuoQuestion(){
- if(!roomData)return;
- questions=(roomData.questionIds||[]).map(id=>bank.find(q=>q.id===id)).filter(Boolean);
- index=roomData.round||0;
- let q=currentDuoQuestion();if(!q)return;
- clearInterval(timerInterval);answered=false;timerValue=20;
- $("modeLabel").textContent="DUO MODE · ROOM "+roomId;
- $("qNumber").textContent=index+1;$("qTotal").textContent=questions.length;
- $("progressBar").style.width=(index/questions.length*100)+"%";
- $("categoryLabel").textContent=q.c.toUpperCase();$("levelLabel").textContent=q.l.toUpperCase()+" LEVEL";
- $("questionText").textContent=q.q;$("timer").textContent="--";
- $("feedback").innerHTML="";$("explanation").textContent="";$("answerArea").innerHTML="";$("gameActions").innerHTML="";
- let existing=roomData.answers?.[index]?.[uid];
- if(existing){answered=true;showFeedback(q,existing.correct);$("feedback").textContent=existing.correct?"Your answer is correct! +10 points":"Your answer has been submitted."}
- if(q.t==="mcq")q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.disabled=answered;b.onclick=()=>answer(i);$("answerArea").appendChild(b)});
- else if(q.t==="truefalse")["True","False"].forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.disabled=answered;b.onclick=()=>answer(i===0);$("answerArea").appendChild(b)});
- else{let inp=document.createElement("input");inp.id="typedAnswer";inp.placeholder="Type your answer...";inp.disabled=answered;let b=document.createElement("button");b.textContent="SUBMIT";b.disabled=answered;b.onclick=()=>answer(inp.value);$("answerArea").append(inp,b)}
- let answers=roomData.answers?.[index]||{};
- let count=Object.keys(answers).length;
- $("feedback").textContent=answered?"Your answer has been submitted. Waiting for the other player...":`Answers submitted: ${count}/2`;
- if(isHost&&count===2){let b=document.createElement("button");b.textContent=index===questions.length-1?"FINISH GAME":"NEXT QUESTION";b.onclick=advanceDuo;$("gameActions").appendChild(b)}
- updateScores();
-}
-async function submitDuoAnswer(value,ok){
- if(answered)return;answered=true;clearInterval(timerInterval);
- try{
-  let answerRef=ref(db,`rooms/${roomId}/answers/${index}/${uid}`);
-  await set(answerRef,{correct:ok,submittedAt:Date.now()});
-  if(ok)await runTransaction(ref(db,`rooms/${roomId}/players/${uid}/score`),v=>(v||0)+10);
- }catch(e){answered=false;alert("Could not submit your answer: "+e.message)}
-}
-async function advanceDuo(){
- if(!isHost||!roomData)return;
- if(index>=questions.length-1){await update(ref(db,"rooms/"+roomId),{status:"finished"});return}
- await update(ref(db,"rooms/"+roomId),{round:index+1});
-}
-window.leaveRoom=async()=>{
- clearInterval(timerInterval);if(roomUnsub){roomUnsub();roomUnsub=null}
- if(roomId&&uid){try{await remove(ref(db,`rooms/${roomId}/players/${uid}`))}catch{}}
- roomId=null;roomData=null;goHome();
-};
+
 </script>
+
+<!-- PART 5 CONTINUES HERE -->
+
+
+<script>
+/* =========================================
+   DUO CHALLENGE — PART 5
+   COMPETITION, QUESTIONS AND SCORING
+========================================= */
+
+/* ---------- PREPARE QUESTION BANK ---------- */
+
+// Generate the language questions once.
+if(typeof generateLanguageQuestions === "function" &&
+   !window.duoLanguageQuestionsGenerated){
+  generateLanguageQuestions();
+  window.duoLanguageQuestionsGenerated=true;
+}
+
+let duoTimerInterval=null;
+let duoRenderedRound=-1;
+let duoLastRoomStatus="";
+let duoSubmitting=false;
+
+const DUO_MODE_NAMES={
+  classic:"Classic Duel",
+  speed:"Speed Race",
+  sudden:"Sudden Death",
+  streak:"Streak Battle",
+  double:"Double or Nothing"
+};
+
+function duoEscape(value){
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+function duoNormalize(value){
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[.!?,;:]/g,"")
+    .replace(/\s+/g," ");
+}
+
+function duoCorrect(question,value){
+  const answer=question.answer;
+
+  if(Array.isArray(answer)){
+    return answer.some(item=>
+      duoNormalize(item)===duoNormalize(value)
+    );
+  }
+
+  return duoNormalize(answer)===duoNormalize(value);
+}
+
+/* ---------- SELECT QUESTIONS ---------- */
+
+function duoPackName(value){
+  const name=String(value || "").toLowerCase();
+
+  if(name.includes("language")) return "languages";
+  if(name.includes("culture") || name.includes("general")) return "culture";
+  if(name.includes("logic") || name.includes("puzzle")) return "logic";
+  if(name.includes("math")) return "mathematics";
+  if(name.includes("science") || name.includes("nature")) return "science";
+
+  return name;
+}
+
+function getDuoQuestionPool(settings){
+  const selectedPacks=Object.entries(settings.packs)
+    .filter(([,enabled])=>enabled)
+    .map(([name])=>duoPackName(name));
+
+  const selectedLanguages=Object.entries(settings.languages)
+    .filter(([,enabled])=>enabled)
+    .map(([name])=>name.toLowerCase());
+
+  const selectedLevels=Object.entries(settings.levels)
+    .filter(([,enabled])=>enabled)
+    .map(([name])=>name.toLowerCase());
+
+  return BANK.filter(question=>{
+    const pack=duoPackName(question.pack);
+
+    if(!selectedPacks.includes(pack)) return false;
+
+    if(pack==="languages"){
+      const language=String(question.language || "").toLowerCase();
+      const level=String(question.level || "").toLowerCase();
+
+      if(!selectedLanguages.includes(language)) return false;
+      if(!selectedLevels.includes(level)) return false;
+    }
+
+    return true;
+  });
+}
+
+function selectDuoQuestions(room){
+  const settings=room.settings;
+  const pool=getDuoQuestionPool(settings);
+
+  if(!pool.length){
+    throw new Error(
+      "No questions found for these settings. Select other subjects or levels."
+    );
+  }
+
+  const shuffledPool=[...pool].sort(()=>Math.random()-0.5);
+
+  const chosen=[];
+  const usedFamilies=new Set();
+
+  // Avoid repeating the same question family in one game.
+  for(const question of shuffledPool){
+    const family=question.family || question.familyId ||
+      question.id || question.question;
+
+    if(usedFamilies.has(family)) continue;
+
+    usedFamilies.add(family);
+    chosen.push(question);
+
+    if(chosen.length>=room.questionCount) break;
+  }
+
+  // If the pool is too small, allow additional questions
+  // but never pretend that the bank contains more variety.
+  if(chosen.length<room.questionCount){
+    const remaining=shuffledPool.filter(q=>!chosen.includes(q));
+
+    while(chosen.length<room.questionCount && remaining.length){
+      chosen.push(remaining.shift());
+    }
+  }
+
+  return chosen;
+}
+
+/* ---------- PLAYER AND ROOM HELPERS ---------- */
+
+function duoPlayers(room){
+  return Object.entries(room.players || {}).map(([uid,player])=>({
+    uid,
+    ...player
+  }));
+}
+
+function duoPlayerScore(room,uid){
+  return Number(room.scores?.[uid] || 0);
+}
+
+function duoPlayerLives(room,uid){
+  return Number(room.lives?.[uid] ?? 3);
+}
+
+function duoCurrentQuestion(room){
+  return room.questions?.[room.round] || null;
+}
+
+function duoMode(room){
+  return room.activeMode || room.mode || "classic";
+}
+
+function duoModeLabel(mode){
+  return DUO_MODE_NAMES[mode] || mode;
+}
+
+/* ---------- START GAME ---------- */
+
+async function startDuoGame(){
+  try{
+    const api=window.firebaseDuo;
+    const room=window.getCurrentRoom();
+    const user=window.getCurrentUser();
+
+    if(!api || !room || !user) return;
+
+    if(room.host!==user.uid){
+      alert("Only the host can start the game.");
+      return;
+    }
+
+    const players=duoPlayers(room);
+
+    if(players.length!==2){
+      alert("You need two players to start.");
+      return;
+    }
+
+    const questions=selectDuoQuestions(room);
+
+    let activeMode=room.mode;
+
+    if(activeMode==="random"){
+      const modes=Object.keys(DUO_MODE_NAMES);
+      activeMode=modes[Math.floor(Math.random()*modes.length)];
+    }
+
+    const scores={};
+    const streaks={};
+    const lives={};
+
+    players.forEach(player=>{
+      scores[player.uid]=0;
+      streaks[player.uid]=0;
+      lives[player.uid]=3;
+    });
+
+    await api.update(api.roomRef(room.code),{
+      status:"playing",
+      activeMode,
+      questions,
+      round:0,
+      roundStartedAt:Date.now(),
+      scores,
+      streaks,
+      lives,
+      answers:{},
+      resolved:{},
+      roundResult:null,
+      finishedAt:null
+    });
+
+  }catch(error){
+    console.error(error);
+    alert(error.message || "Unable to start the game.");
+  }
+}
+
+/* ---------- QUESTION DISPLAY ---------- */
+
+function renderDuoGame(room){
+  const screen=document.getElementById("duoGameScreen");
+  const players=duoPlayers(room);
+  const user=window.getCurrentUser();
+
+  const question=duoCurrentQuestion(room);
+  if(!question) return;
+
+  const round=room.round;
+  const mode=duoMode(room);
+  const answers=room.answers?.[round] || {};
+  const myAnswer=answers[user.uid];
+
+  const options=Array.isArray(question.options)
+    ? question.options
+    : [];
+
+  const questionText=question.question || question.text || "";
+
+  const scoreHTML=players.map(player=>`
+    <div class="duo-player-score">
+      <strong>${duoEscape(player.name)}</strong>
+      <span>${duoPlayerScore(room,player.uid)} pts</span>
+      ${mode==="sudden"
+        ? `<small>❤️ ${duoPlayerLives(room,player.uid)}</small>`
+        : ""}
+      ${mode==="streak"
+        ? `<small>🔥 ${room.streaks?.[player.uid] || 0} streak</small>`
+        : ""}
+    </div>
+  `).join("");
+
+  const answeredCount=Object.keys(answers).length;
+
+  const optionHTML=options.map((option,index)=>`
+    <button
+      class="duo-answer-option"
+      onclick="submitDuoAnswer(${index})"
+      ${myAnswer ? "disabled" : ""}
+    >
+      <span class="duo-option-letter">${String.fromCharCode(65+index)}</span>
+      ${duoEscape(option)}
+    </button>
+  `).join("");
+
+  const stakeHTML=mode==="double" && !myAnswer ? `
+    <div class="duo-stake">
+      <p>Choose your stake before answering:</p>
+      <select id="duoStake">
+        <option value="5">5 points</option>
+        <option value="10" selected>10 points</option>
+        <option value="20">20 points</option>
+      </select>
+    </div>
+  ` : "";
+
+  screen.innerHTML=`
+    <div class="duo-game-panel">
+      <div class="duo-game-top">
+        <button onclick="leaveDuoGame()">← Leave</button>
+        <span>${duoEscape(duoModeLabel(mode))}</span>
+        <span>Round ${round+1}/${room.questions.length}</span>
+      </div>
+
+      <div class="duo-scoreboard">
+        ${scoreHTML}
+      </div>
+
+      <div class="duo-timer">
+        <div id="duoTimerValue">${room.seconds}</div>
+        <small>SECONDS LEFT</small>
+      </div>
+
+      <div class="duo-question-card">
+        <p class="duo-question-category">
+          ${duoEscape(question.pack || "Challenge")}
+          ${question.level ? " · "+duoEscape(question.level) : ""}
+        </p>
+
+        <h2>${duoEscape(questionText)}</h2>
+
+        <div class="duo-options">
+          ${optionHTML}
+        </div>
+
+        ${stakeHTML}
+
+        <div id="duoAnswerStatus">
+          ${myAnswer
+            ? "Your answer has been submitted. Waiting for your opponent..."
+            : "Choose your answer!"}
+        </div>
+
+        <div class="duo-progress">
+          ${answeredCount}/2 players answered
+        </div>
+      </div>
+    </div>
+  `;
+
+  duoStartTimer(room);
+}
+
+/* ---------- SYNCHRONIZED TIMER ---------- */
+
+function duoStartTimer(room){
+  if(duoTimerInterval){
+    clearInterval(duoTimerInterval);
+  }
+
+  const code=room.code;
+  const round=room.round;
+  const seconds=Number(room.seconds || 20);
+  const started=Number(room.roundStartedAt || Date.now());
+
+  function tick(){
+    const elapsed=Math.floor((Date.now()-started)/1000);
+    const remaining=Math.max(0,seconds-elapsed);
+
+    const display=document.getElementById("duoTimerValue");
+
+    if(display){
+      display.textContent=remaining;
+    }
+
+    if(remaining<=0){
+      clearInterval(duoTimerInterval);
+      duoTimerInterval=null;
+
+      if(window.getDuoIsHost()){
+        resolveDuoRound(code,round);
+      }
+    }
+  }
+
+  tick();
+  duoTimerInterval=setInterval(tick,250);
+}
+
+/* ---------- SUBMIT ANSWER ---------- */
+
+async function submitDuoAnswer(optionIndex){
+  if(duoSubmitting) return;
+
+  const room=window.getCurrentRoom();
+  const user=window.getCurrentUser();
+
+  if(!room || !user || room.status!=="playing") return;
+
+  const round=room.round;
+  const question=duoCurrentQuestion(room);
+
+  if(!question) return;
+
+  if(room.answers?.[round]?.[user.uid]){
+    return;
+  }
+
+  const options=Array.isArray(question.options)
+    ? question.options
+    : [];
+
+  const value=options[optionIndex];
+
+  if(value===undefined) return;
+
+  const stakeElement=document.getElementById("duoStake");
+  const stake=Number(stakeElement?.value || 10);
+
+  const elapsedMs=Math.max(
+    0,
+    Date.now()-Number(room.roundStartedAt || Date.now())
+  );
+
+  const answerData={
+    value,
+    correct:duoCorrect(question,value),
+    elapsedMs,
+    submittedAt:Date.now(),
+    stake
+  };
+
+  duoSubmitting=true;
+
+  try{
+    const api=window.firebaseDuo;
+
+    await api.set(
+      api.ref(
+        `rooms/${room.code}/answers/${round}/${user.uid}`
+      ),
+      answerData
+    );
+
+    const status=document.getElementById("duoAnswerStatus");
+
+    if(status){
+      status.textContent="Answer submitted! Waiting for the other player...";
+    }
+
+  }catch(error){
+    console.error(error);
+    alert("Your answer could not be submitted. Try again.");
+  }finally{
+    duoSubmitting=false;
+  }
+}
+
+/* ---------- ROUND RESOLUTION ---------- */
+
+async function resolveDuoRound(code,roundNumber){
+  if(!window.getDuoIsHost()) return;
+
+  const api=window.firebaseDuo;
+  const user=window.getCurrentUser();
+
+  if(!api || !user) return;
+
+  try{
+    const roomSnapshot=await api.get(api.roomRef(code));
+
+    if(!roomSnapshot.exists()) return;
+
+    const room=roomSnapshot.val();
+
+    if(room.status!=="playing" || room.round!==roundNumber){
+      return;
+    }
+
+    const players=duoPlayers(room);
+    const answers=room.answers?.[roundNumber] || {};
+
+    // Wait for both answers unless the timer has expired.
+    const elapsed=(Date.now()-Number(room.roundStartedAt || Date.now()))/1000;
+
+    if(Object.keys(answers).length<2 && elapsed<Number(room.seconds)){
+      return;
+    }
+
+    // Claim the round exactly once.
+    const claim=await api.runTransaction(
+      api.ref(`rooms/${code}/resolved/${roundNumber}`),
+      current=>{
+        if(current) return;
+        return {
+          claimedBy:user.uid,
+          claimedAt:Date.now()
+        };
+      }
+    );
+
+    if(!claim.committed) return;
+
+    const question=duoCurrentQuestion(room);
+    const mode=duoMode(room);
+
+    const scores={...(room.scores || {})};
+    const streaks={...(room.streaks || {})};
+    const lives={...(room.lives || {})};
+
+    const roundDetails={};
+
+    players.forEach(player=>{
+      const answer=answers[player.uid];
+      const correct=Boolean(answer?.correct);
+
+      roundDetails[player.uid]={
+        answered:Boolean(answer),
+        correct,
+        value:answer?.value ?? null,
+        elapsedMs:answer?.elapsedMs ?? null,
+        points:0
+      };
+
+      if(mode==="classic"){
+        if(correct){
+          scores[player.uid]=(scores[player.uid] || 0)+10;
+          roundDetails[player.uid].points=10;
+        }
+      }
+
+      if(mode==="speed"){
+        if(correct){
+          scores[player.uid]=(scores[player.uid] || 0)+10;
+          roundDetails[player.uid].points=10;
+        }
+      }
+
+      if(mode==="sudden"){
+        if(!correct){
+          lives[player.uid]=Math.max(0,(lives[player.uid] ?? 3)-1);
+        }
+      }
+
+      if(mode==="streak"){
+        if(correct){
+          streaks[player.uid]=(streaks[player.uid] || 0)+1;
+          const points=10*streaks[player.uid];
+          scores[player.uid]=(scores[player.uid] || 0)+points;
+          roundDetails[player.uid].points=points;
+        }else{
+          streaks[player.uid]=0;
+        }
+      }
+
+      if(mode==="double"){
+        const stake=Math.max(5,Math.min(20,Number(answer?.stake || 10)));
+        const points=correct ? stake : -stake;
+
+        scores[player.uid]=(scores[player.uid] || 0)+points;
+        roundDetails[player.uid].points=points;
+      }
+    });
+
+    // Speed Race: fastest correct answer earns an extra 10.
+    if(mode==="speed"){
+      const correctPlayers=players
+        .filter(player=>answers[player.uid]?.correct)
+        .sort((a,b)=>
+          Number(answers[a.uid].elapsedMs || 0)-
+          Number(answers[b.uid].elapsedMs || 0)
+        );
+
+      if(correctPlayers.length){
+        const fastest=correctPlayers[0];
+        scores[fastest.uid]=(scores[fastest.uid] || 0)+10;
+        roundDetails[fastest.uid].points+=10;
+      }
+    }
+
+    const alivePlayers=players.filter(
+      player=>(lives[player.uid] ?? 3)>0
+    );
+
+    const suddenWinner=
+      mode==="sudden" && alivePlayers.length===1
+        ? alivePlayers[0].uid
+        : null;
+
+    const nextRound=roundNumber+1;
+    const gameFinished=
+      nextRound>=room.questions.length ||
+      (mode==="sudden" && alivePlayers.length<=1);
+
+    const result={
+      round:roundNumber,
+      mode,
+      question:question.question || question.text || "",
+      explanation:question.explanation || "",
+      details:roundDetails,
+      scores,
+      lives,
+      streaks,
+      winner:suddenWinner,
+      finished:gameFinished,
+      resolvedAt:Date.now()
+    };
+
+    await api.update(api.roomRef(code),{
+      scores,
+      streaks,
+      lives,
+      roundResult:result,
+      status:gameFinished ? "finished" : "playing",
+      finishedAt:gameFinished ? Date.now() : null
+    });
+
+  }catch(error){
+    console.error("Round resolution error:",error);
+  }
+}
+
+/* ---------- ADVANCE TO NEXT ROUND ---------- */
+
+async function advanceDuo(){
+  const room=window.getCurrentRoom();
+  const user=window.getCurrentUser();
+
+  if(!room || !user || room.host!==user.uid) return;
+  if(room.status!=="playing") return;
+
+  const nextRound=room.round+1;
+
+  if(nextRound>=room.questions.length) return;
+
+  try{
+    const api=window.firebaseDuo;
+
+    await api.update(api.roomRef(room.code),{
+      round:nextRound,
+      roundStartedAt:Date.now(),
+      roundResult:null
+    });
+
+  }catch(error){
+    console.error(error);
+    alert("Could not start the next round.");
+  }
+}
+
+/* ---------- RESULTS DISPLAY ---------- */
+
+function showDuoResults(room){
+  if(duoTimerInterval){
+    clearInterval(duoTimerInterval);
+    duoTimerInterval=null;
+  }
+
+  const screen=document.getElementById("duoGameScreen");
+  const players=duoPlayers(room);
+
+  const ranking=players.sort((a,b)=>
+    duoPlayerScore(room,b.uid)-duoPlayerScore(room,a.uid)
+  );
+
+  let winner=null;
+
+  if(room.activeMode==="sudden" && room.roundResult?.winner){
+    winner=players.find(p=>p.uid===room.roundResult.winner);
+  }else if(ranking.length===2){
+    const first=duoPlayerScore(room,ranking[0].uid);
+    const second=duoPlayerScore(room,ranking[1].uid);
+
+    if(first!==second) winner=ranking[0];
+  }
+
+  const rankingHTML=ranking.map((player,index)=>`
+    <div class="duo-final-player">
+      <span>${index===0 ? "🏆" : "🥈"} ${duoEscape(player.name)}</span>
+      <strong>${duoPlayerScore(room,player.uid)} pts</strong>
+    </div>
+  `).join("");
+
+  screen.innerHTML=`
+    <div class="duo-result-panel">
+      <div class="duo-result-icon">${winner ? "🏆" : "🤝"}</div>
+      <h1>${winner ? duoEscape(winner.name)+" wins!" : "It's a draw!"}</h1>
+      <p>${duoEscape(duoModeLabel(room.activeMode))}</p>
+
+      <div class="duo-final-ranking">
+        ${rankingHTML}
+      </div>
+
+      <p class="duo-result-subtitle">
+        ${room.questions?.length || 0} questions played
+      </p>
+
+      <button onclick="playDuoAgain()">Play Again</button>
+      <button onclick="leaveDuoGame()">Back to Home</button>
+    </div>
+  `;
+
+  showScreen("duoGameScreen");
+}
+
+/* ---------- ROOM UPDATE HANDLER ---------- */
+
+window.handleDuoRoomUpdate=function(room){
+  if(!room) return;
+
+  if(room.status==="waiting"){
+    renderLobby();
+    return;
+  }
+
+  if(room.status==="finished"){
+    showDuoResults(room);
+    return;
+  }
+
+  if(room.status!=="playing") return;
+
+  // Both players must leave the lobby as soon as the host starts the game.
+  showScreen("duoGameScreen");
+
+  const round=room.round;
+
+  // A resolved round is displayed to both players.
+  if(room.roundResult && room.roundResult.round===round){
+    if(duoTimerInterval){
+      clearInterval(duoTimerInterval);
+      duoTimerInterval=null;
+    }
+
+    renderDuoRoundResult(room);
+    return;
+  }
+
+  if(duoRenderedRound!==round || duoLastRoomStatus!==room.status){
+    duoRenderedRound=round;
+    duoLastRoomStatus=room.status;
+    renderDuoGame(room);
+  }else{
+    updateDuoAnswerCount(room);
+  }
+
+  // Host checks if both players have answered.
+  const answers=room.answers?.[round] || {};
+
+  if(window.getDuoIsHost() && Object.keys(answers).length===2){
+    resolveDuoRound(room.code,round);
+  }
+};
+
+/* ---------- ROUND RESULT DISPLAY ---------- */
+
+function renderDuoRoundResult(room){
+  const screen=document.getElementById("duoGameScreen");
+  const players=duoPlayers(room);
+  const result=room.roundResult;
+
+  if(!result) return;
+
+  const details=players.map(player=>{
+    const detail=result.details?.[player.uid] || {};
+
+    return `
+      <div class="duo-round-player">
+        <strong>${duoEscape(player.name)}</strong>
+        <span>${detail.correct ? "✓ Correct" : "✗ Incorrect / No answer"}</span>
+        <b>${detail.points>0 ? "+" : ""}${detail.points || 0} pts</b>
+      </div>
+    `;
+  }).join("");
+
+  const host=window.getDuoIsHost();
+
+  screen.innerHTML=`
+    <div class="duo-result-panel">
+      <p>ROUND ${result.round+1} COMPLETED</p>
+      <h2>${duoEscape(result.question)}</h2>
+
+      <div class="duo-round-details">
+        ${details}
+      </div>
+
+      ${result.explanation
+        ? `<p class="duo-explanation">${duoEscape(result.explanation)}</p>`
+        : ""}
+
+      <h3>Current score</h3>
+
+      ${players.map(player=>`
+        <div class="duo-final-player">
+          <span>${duoEscape(player.name)}</span>
+          <strong>${duoPlayerScore(room,player.uid)} pts</strong>
+        </div>
+      `).join("")}
+
+      ${host
+        ? `<button onclick="advanceDuo()">Next Round →</button>`
+        : `<p>Waiting for the host to start the next round...</p>`}
+    </div>
+  `;
+}
+
+/* ---------- ANSWER COUNT ---------- */
+
+function updateDuoAnswerCount(room){
+  const answers=room.answers?.[room.round] || {};
+  const count=Object.keys(answers).length;
+
+  const progress=document.querySelector(
+    "#duoGameScreen .duo-progress"
+  );
+
+  if(progress){
+    progress.textContent=count+"/2 players answered";
+  }
+
+  const user=window.getCurrentUser();
+  const myAnswer=answers[user?.uid];
+
+  const status=document.getElementById("duoAnswerStatus");
+
+  if(status && myAnswer){
+    status.textContent=
+      "Your answer has been submitted. Waiting for your opponent...";
+  }
+}
+
+/* ---------- PLAY AGAIN ---------- */
+
+async function playDuoAgain(){
+  const room=window.getCurrentRoom();
+  const user=window.getCurrentUser();
+
+  if(!room || !user) return;
+
+  if(room.host!==user.uid){
+    alert("Ask the host to create the next challenge.");
+    return;
+  }
+
+  try{
+    const api=window.firebaseDuo;
+
+    await api.update(api.roomRef(room.code),{
+      status:"waiting",
+      round:0,
+      questions:[],
+      answers:{},
+      resolved:{},
+      roundResult:null,
+      scores:{},
+      streaks:{},
+      lives:{},
+      activeMode:null,
+      roundStartedAt:0,
+      finishedAt:null
+    });
+
+    duoRenderedRound=-1;
+    showScreen("lobbyScreen");
+
+  }catch(error){
+    console.error(error);
+    alert("Could not restart the game.");
+  }
+}
+
+/* ---------- EXIT ---------- */
+
+function leaveDuoGame(){
+  if(duoTimerInterval){
+    clearInterval(duoTimerInterval);
+    duoTimerInterval=null;
+  }
+
+  duoRenderedRound=-1;
+  leaveRoom();
+}
+
+/* ---------- CONNECT BUTTONS ---------- */
+
+window.startDuoGame=startDuoGame;
+window.submitDuoAnswer=submitDuoAnswer;
+window.advanceDuo=advanceDuo;
+window.playDuoAgain=playDuoAgain;
+window.leaveDuoGame=leaveDuoGame;
+
+// The start button uses its inline onclick handler in the HTML.
+
+// Reset the game display when leaving.
+window.addEventListener("beforeunload",()=>{
+  if(duoTimerInterval){
+    clearInterval(duoTimerInterval);
+  }
+});
+
+</script>
+
+
+<style>
+.duo-game-panel,
+.duo-result-panel {
+  width: min(100% - 24px, 760px);
+  margin: 20px auto;
+  padding: 22px;
+  border-radius: 20px;
+  background: var(--card, #171b2a);
+  color: var(--text, #fff);
+  box-sizing: border-box;
+}
+
+.duo-game-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.duo-scoreboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.duo-player-score,
+.duo-round-player,
+.duo-final-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(128,128,128,.12);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.duo-timer {
+  text-align: center;
+  margin: 20px auto;
+}
+
+#duoTimerValue {
+  font-size: clamp(38px, 8vw, 58px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.duo-question-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(128,128,128,.08);
+}
+
+.duo-question-card h2 {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.duo-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.duo-answer-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 58px;
+  padding: 13px;
+  border: 1px solid rgba(128,128,128,.35);
+  border-radius: 12px;
+  background: rgba(128,128,128,.12);
+  color: inherit;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.duo-answer-option:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.duo-option-letter {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(128,128,128,.2);
+  font-weight: 800;
+}
+
+.duo-progress,
+#duoAnswerStatus {
+  text-align: center;
+  margin-top: 16px;
+  opacity: .8;
+}
+
+.duo-result-icon {
+  font-size: 58px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.duo-result-panel h1,
+.duo-result-panel h2,
+.duo-result-panel h3 {
+  text-align: center;
+}
+
+.duo-final-ranking,
+.duo-round-details {
+  margin: 22px 0;
+}
+
+.duo-result-panel button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.duo-stake {
+  margin: 16px 0;
+}
+
+.duo-stake select {
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 100%;
+}
+
+@media(max-width:520px) {
+  .duo-game-panel,
+  .duo-result-panel {
+    padding: 14px;
+  }
+
+  .duo-options {
+    grid-template-columns: 1fr;
+  }
+
+  .duo-scoreboard {
+    gap: 7px;
+  }
+
+  .duo-player-score {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+</style>
+
+
+<script>
+/* Keep Duo language filters visible only when Languages is selected. */
+(function(){
+  const languagesToggle = document.getElementById("duoPackLanguages");
+  const languageOptions = document.getElementById("duoLanguageOptions");
+  if (!languagesToggle || !languageOptions) return;
+
+  function updateDuoLanguageOptions(){
+    languageOptions.classList.toggle("hidden", !languagesToggle.checked);
+  }
+
+  languagesToggle.addEventListener("change", updateDuoLanguageOptions);
+  updateDuoLanguageOptions();
+})();
+</script>
+
 </body>
 </html>
