@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUO CHALLENGE</title>
+<style>
+:root{--bg:#0b1020;--panel:#151d33;--panel2:#1c2742;--text:#f4f6ff;--muted:#9ba8c7;--purple:#8b72ff;--cyan:#42d9d0;--good:#42d9a0;--bad:#ff7185}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0%,#22204b 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer;font-weight:700;border-radius:12px;padding:12px 17px;background:var(--purple);color:white;transition:.2s}
+button:hover{filter:brightness(1.12);transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.secondary{background:#293553;color:var(--text)}
+.outline{background:transparent;border:1px solid #526080;color:var(--text)}
+.danger{background:#7b3048}
+.wrap{max-width:1000px;margin:auto;padding:24px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:34px}
+.logo{font-size:21px;font-weight:900;letter-spacing:1px}
+.logo span{color:var(--cyan)}
+.pill{font-size:12px;color:var(--cyan);border:1px solid #286c70;padding:6px 10px;border-radius:30px}
+.hero{text-align:center;padding:38px 10px 25px}
+.hero h1{font-size:clamp(36px,7vw,64px);line-height:1;margin:0 0 15px;letter-spacing:-2px}
+.hero h1 span{color:var(--purple)}
+.hero p{color:var(--muted);max-width:600px;margin:0 auto;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:25px 0}
+.card{background:linear-gradient(145deg,var(--panel),#11182b);border:1px solid #293653;border-radius:19px;padding:22px}
+.card h2,.card h3{margin-top:0}
+.card p{color:var(--muted);line-height:1.55}
+.bigicon{font-size:32px;margin-bottom:12px}
+.card button{width:100%;margin-top:10px}
+.section{margin-top:24px}
+.hidden{display:none!important}
+input,select{width:100%;padding:13px 14px;border-radius:11px;background:#0e1629;border:1px solid #394766;color:white;margin:7px 0 13px;outline:none}
+label{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.small{font-size:12px;color:var(--muted)}
+.status{padding:10px 13px;background:#17253a;border:1px solid #314665;border-radius:12px;color:var(--muted);font-size:13px;margin:15px 0}
+.status.good{color:var(--good);border-color:#286a56}
+.status.warn{color:#ffd17a;border-color:#735b2b}
+#game{max-width:760px;margin:20px auto}
+.gameTop{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.stat{background:#18233b;padding:10px 14px;border-radius:12px;font-size:13px}
+.progress{height:7px;background:#26324e;border-radius:10px;overflow:hidden;margin:15px 0 22px}
+.progress div{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));width:0%;transition:.3s}
+.question{font-size:clamp(21px,4vw,30px);font-weight:800;line-height:1.3;margin:15px 0 22px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.answer{background:#202c49;border:1px solid #354564;text-align:left;min-height:58px}
+.answer.selected{border-color:var(--cyan);background:#17404a}
+.answer.correct{border-color:var(--good);background:#174434}
+.answer.wrong{border-color:var(--bad);background:#482536}
+.feedback{padding:14px;border-radius:12px;margin:15px 0;line-height:1.5}
+.feedback.good{background:#123b31;color:#8ef0c7}
+.feedback.bad{background:#482536;color:#ffb2bd}
+.timer{font-weight:900;color:var(--cyan)}
+.players{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.player{background:#202c49;padding:12px 14px;border-radius:12px;flex:1;min-width:140px}
+.player strong{display:block;margin-bottom:4px}
+.code{font-size:27px;letter-spacing:5px;font-weight:900;color:var(--cyan);background:#0d172b;padding:15px;border-radius:12px;text-align:center;margin:10px 0}
+footer{text-align:center;color:#667493;font-size:12px;margin-top:40px}
+@media(max-width:560px){.answers{grid-template-columns:1fr}.wrap{padding:17px 13px 40px}.hero{padding-top:25px}header{margin-bottom:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">DUO <span>CHALLENGE</span></div>
+  <div class="pill">LEARN · PLAY · COMPETE</div>
+</header>
+
+<section id="home">
+  <div class="hero">
+    <h1>READY TO <span>CHALLENGE?</span></h1>
+    <p>Test your knowledge, discover new things and challenge your friends. Every question is a new opportunity to learn.</p>
+  </div>
+  <div id="connection" class="status warn">Connecting to online services...</div>
+  <div class="grid">
+    <div class="card">
+      <div class="bigicon">🎯</div>
+      <h2>Solo Mode</h2>
+      <p>Play at your own pace, improve your knowledge and beat your personal best.</p>
+      <button onclick="showSoloSetup()">PLAY SOLO</button>
+    </div>
+    <div class="card">
+      <div class="bigicon">⚡</div>
+      <h2>Duo Mode</h2>
+      <p>Create a private room or join your friend's room with an invitation code.</p>
+      <button onclick="showDuoSetup()">PLAY WITH A FRIEND</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Explore your knowledge</h3>
+    <p>Chinese · English · French · Mathematics · Computer Science · C Programming · General Knowledge · Logic</p>
+    <p class="small">Your solo question history is saved on this device. Duo question history is saved in the room.</p>
+  </div>
+</section>
+
+<section id="soloSetup" class="card hidden">
+  <h2>Solo Challenge</h2>
+  <label for="soloName">Your player name</label>
+  <input id="soloName" maxlength="18" placeholder="Enter your name">
+  <label for="soloCategory">Choose a subject</label>
+  <select id="soloCategory"></select>
+  <label for="soloLevel">Choose your level</label>
+  <select id="soloLevel">
+    <option value="all">All levels</option><option value="Easy">Easy</option>
+    <option value="Medium">Medium</option><option value="Hard">Hard</option>
+  </select>
+  <div class="row">
+    <button onclick="startSolo()">START SOLO GAME</button>
+    <button class="secondary" onclick="goHome()">BACK</button>
+  </div>
+  <p class="small">Questions you have played recently will be avoided for five days whenever possible.</p>
+</section>
+
+<section id="duoSetup" class="card hidden">
+  <h2>Duo Challenge</h2>
+  <label for="duoName">Your player name</label>
+  <input id="duoName" maxlength="18" placeholder="Enter your name">
+  <div class="grid">
+    <div class="card">
+      <h3>Create a room</h3>
+      <p>Open a new private room and invite your friend.</p>
+      <button onclick="createRoom()">CREATE ROOM</button>
+    </div>
+    <div class="card">
+      <h3>Join a room</h3>
+      <p>Enter the invitation code shared by your friend.</p>
+      <input id="joinCode" maxlength="6" placeholder="ROOM CODE">
+      <button onclick="joinRoom()">JOIN ROOM</button>
+    </div>
+  </div>
+  <button class="secondary" onclick="goHome()">BACK</button>
+</section>
+
+<section id="lobby" class="card hidden">
+  <h2>Private Room</h2>
+  <p>Share this code with your friend:</p>
+  <div id="roomCode" class="code">------</div>
+  <button class="secondary" onclick="copyRoomCode()">COPY INVITATION CODE</button>
+  <div id="lobbyPlayers" class="players"></div>
+  <div id="lobbyMessage" class="status">Waiting for another player...</div>
+  <button id="startDuo" onclick="startDuoGame()" disabled>START DUO GAME</button>
+  <button class="secondary" onclick="leaveRoom()">LEAVE ROOM</button>
+</section>
+
+<section id="game" class="hidden">
+  <div class="gameTop">
+    <div class="stat" id="modeLabel">SOLO MODE</div>
+    <div class="stat">Question <span id="qNumber">1</span>/<span id="qTotal">10</span></div>
+    <div class="stat">Time: <span id="timer" class="timer">20</span>s</div>
+  </div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div class="players" id="scoreBoard"></div>
+  <div class="card">
+    <div class="row">
+      <div class="small" id="categoryLabel">CATEGORY</div>
+      <div class="small" id="levelLabel" style="text-align:right">LEVEL</div>
+    </div>
+    <div class="question" id="questionText">Question goes here</div>
+    <div id="answerArea" class="answers"></div>
+    <div id="feedback"></div>
+    <div id="explanation" class="small"></div>
+    <div id="gameActions" class="row" style="margin-top:18px"></div>
+  </div>
+  <button class="secondary" onclick="exitGame()" style="margin-top:14px">EXIT GAME</button>
+</section>
+
+<section id="results" class="card hidden">
+  <div class="hero" style="padding:10px">
+    <div class="bigicon">🏆</div>
+    <h1 id="resultTitle">WELL PLAYED!</h1>
+    <p id="resultText">Your challenge is complete.</p>
+  </div>
+  <div id="finalScores" class="players"></div>
+  <button onclick="playAgain()">PLAY AGAIN</button>
+  <button class="secondary" onclick="goHome()">HOME</button>
+</section>
+
+<footer>DUO CHALLENGE · A LITTLE KNOWLEDGE EVERY DAY MAKES A BIG DIFFERENCE</footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getDatabase, ref, set, get, update, onValue, runTransaction, remove } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+/* Firebase project configuration */
+const firebaseConfig = {
+  apiKey: "AIzaSyDq2lbJiPiOc1UtMKU2o1CtTkQMmC5kz2k",
+  authDomain: "duo-challenge-8ca08.firebaseapp.com",
+  databaseURL: "https://duo-challenge-8ca08-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "duo-challenge-8ca08",
+  storageBucket: "duo-challenge-8ca08.firebasestorage.app",
+  messagingSenderId: "1019955581561",
+  appId: "1:1019955581561:web:6fab80e8409f49579b3aa8"
+};
+
+const $ = id => document.getElementById(id);
+const categories = ["All subjects","Chinese","English","French","Mathematics","Computer Science","C Programming","General Knowledge","Logic"];
+const bank = [
+{ id:"zh1",c:"Chinese",l:"Easy",t:"mcq",q:"What does 你好 mean?",o:["Goodbye","Hello","Thank you","Sorry"],a:1,e:"你好 (nǐ hǎo) means hello."},
+{ id:"zh2",c:"Chinese",l:"Easy",t:"text",q:"Write the Chinese word for 'thank you'.",a:"谢谢",e:"谢谢 (xièxie) means thank you."},
+{ id:"zh3",c:"Chinese",l:"Easy",t:"mcq",q:"What is the meaning of 我?",o:["You","He","I / me","We"],a:2,e:"我 (wǒ) means I or me."},
+{ id:"zh4",c:"Chinese",l:"Medium",t:"mcq",q:"Which number is 八?",o:["Six","Seven","Eight","Nine"],a:2,e:"八 (bā) is the number eight."},
+{ id:"zh5",c:"Chinese",l:"Medium",t:"text",q:"How do you say 'I am a student' in Chinese?",a:"我是学生",e:"我是学生 (wǒ shì xuésheng)."},
+{ id:"zh6",c:"Chinese",l:"Medium",t:"mcq",q:"What does 再见 mean?",o:["Welcome","Goodbye","Good morning","Please"],a:1,e:"再见 (zàijiàn) means goodbye."},
+{ id:"zh7",c:"Chinese",l:"Hard",t:"mcq",q:"Which particle commonly marks a completed action?",o:["吗","了","的","呢"],a:1,e:"了 (le) often marks a completed action or change of state."},
+{ id:"zh8",c:"Chinese",l:"Hard",t:"text",q:"Write the Chinese character for 'person'.",a:"人",e:"人 (rén) means person."},
+{ id:"en1",c:"English",l:"Easy",t:"mcq",q:"Choose the correct sentence.",o:["She go to school.","She goes to school.","She going school.","She gone to school."],a:1,e:"With he, she or it in the present simple, add -s to most verbs."},
+{ id:"en2",c:"English",l:"Easy",t:"text",q:"What is the past tense of 'go'?",a:"went",e:"Go → went."},
+{ id:"en3",c:"English",l:"Easy",t:"mcq",q:"Which word is an adjective?",o:["Quickly","Beautiful","Run","Happiness"],a:1,e:"Beautiful describes a noun, so it is an adjective."},
+{ id:"en4",c:"English",l:"Medium",t:"mcq",q:"Choose the correct form: 'I have lived here ___ 2024.'",o:["for","since","during","from"],a:1,e:"Use since with a starting point in time."},
+{ id:"en5",c:"English",l:"Medium",t:"text",q:"What is the comparative form of 'good'?",a:"better",e:"Good → better → best."},
+{ id:"en6",c:"English",l:"Hard",t:"mcq",q:"Which sentence is in the passive voice?",o:["They built the bridge.","The bridge was built.","They are building it.","They build bridges."],a:1,e:"The subject receives the action: was built."},
+{ id:"fr1",c:"French",l:"Easy",t:"mcq",q:"Quel est le contraire de 'rapide' ?",o:["Lent","Fort","Grand","Léger"],a:0,e:"Le contraire de rapide est lent."},
+{ id:"fr2",c:"French",l:"Easy",t:"text",q:"Conjugue 'être' avec 'nous' au présent.",a:"sommes",e:"Nous sommes."},
+{ id:"fr3",c:"French",l:"Medium",t:"mcq",q:"Quel mot est un adverbe ?",o:["Heureux","Heureusement","Bonheur","Heureuse"],a:1,e:"Heureusement est un adverbe."},
+{ id:"fr4",c:"French",l:"Medium",t:"mcq",q:"Quelle phrase est correctement écrite ?",o:["Ils son arrivé.","Ils sont arrivés.","Ils sont arriver.","Il sont arrivés."],a:1,e:"Ils sont arrivés : auxiliaire être et accord du participe passé."},
+{ id:"fr5",c:"French",l:"Hard",t:"text",q:"Quel est le pluriel de 'cheval' ?",a:"chevaux",e:"Cheval devient chevaux au pluriel."},
+{ id:"ma1",c:"Mathematics",l:"Easy",t:"mcq",q:"What is 12 × 8?",o:["86","92","96","108"],a:2,e:"12 × 8 = 96."},
+{ id:"ma2",c:"Mathematics",l:"Easy",t:"text",q:"Solve: 3x = 21. What is x?",a:"7",e:"Divide both sides by 3: x = 7."},
+{ id:"ma3",c:"Mathematics",l:"Medium",t:"mcq",q:"What is the derivative of x²?",o:["x","2x","x³","2"],a:1,e:"Using the power rule, the derivative of x² is 2x."},
+{ id:"ma4",c:"Mathematics",l:"Medium",t:"mcq",q:"What is the value of √144?",o:["10","11","12","14"],a:2,e:"12 × 12 = 144."},
+{ id:"ma5",c:"Mathematics",l:"Hard",t:"text",q:"What is the derivative of 5x³?",a:"15x^2",e:"Apply the power rule: 5 × 3x² = 15x²."},
+{ id:"ma6",c:"Mathematics",l:"Hard",t:"mcq",q:"What is the limit of 1/x as x approaches positive infinity?",o:["1","0","Infinity","-1"],a:1,e:"As x becomes very large, 1/x approaches zero."},
+{ id:"cs1",c:"Computer Science",l:"Easy",t:"mcq",q:"What does CPU stand for?",o:["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User"],a:0,e:"CPU means Central Processing Unit."},
+{ id:"cs2",c:"Computer Science",l:"Easy",t:"truefalse",q:"RAM is usually temporary memory.",a:true,e:"RAM is volatile memory: its contents are lost when power is off."},
+{ id:"cs3",c:"Computer Science",l:"Medium",t:"mcq",q:"Which one is an operating system?",o:["Python","Windows","HTML","Google"],a:1,e:"Windows is an operating system."},
+{ id:"cs4",c:"Computer Science",l:"Medium",t:"mcq",q:"What is the binary representation of decimal 5?",o:["101","110","111","100"],a:0,e:"5 in binary is 101."},
+{ id:"cs5",c:"Computer Science",l:"Hard",t:"mcq",q:"What does HTTPS mainly add to HTTP?",o:["Image compression","Encrypted communication","More storage","A faster CPU"],a:1,e:"HTTPS uses encryption through TLS to protect communication."},
+{ id:"c1",c:"C Programming",l:"Easy",t:"mcq",q:"Which symbol ends most C statements?",o:[".",",","; ",":"],a:2,e:"A semicolon ends most C statements."},
+{ id:"c2",c:"C Programming",l:"Easy",t:"mcq",q:"Which function prints formatted output in C?",o:["scanf()","printf()","main()","input()"],a:1,e:"printf() displays formatted output."},
+{ id:"c3",c:"C Programming",l:"Medium",t:"mcq",q:"Which format specifier is commonly used for an int?",o:["%f","%c","%d","%s"],a:2,e:"%d is commonly used for an int."},
+{ id:"c4",c:"C Programming",l:"Medium",t:"truefalse",q:"In C, array indexing normally starts at 0.",a:true,e:"The first element of an array has index 0."},
+{ id:"c5",c:"C Programming",l:"Hard",t:"mcq",q:"What is the value of 7 % 3 in C?",o:["0","1","2","3"],a:1,e:"The modulo operator returns the remainder: 7 divided by 3 leaves 1."},
+{ id:"c6",c:"C Programming",l:"Hard",t:"text",q:"Which C keyword is used to return a value from a function?",a:"return",e:"The return statement sends a value back to the caller."},
+{ id:"g1",c:"General Knowledge",l:"Easy",t:"mcq",q:"What is the capital of Japan?",o:["Seoul","Tokyo","Beijing","Bangkok"],a:1,e:"Tokyo is the capital of Japan."},
+{ id:"g2",c:"General Knowledge",l:"Easy",t:"mcq",q:"How many days are there in a leap year?",o:["364","365","366","367"],a:2,e:"A leap year has 366 days."},
+{ id:"g3",c:"General Knowledge",l:"Medium",t:"mcq",q:"Which planet is known as the Red Planet?",o:["Venus","Mars","Jupiter","Mercury"],a:1,e:"Mars appears reddish because of iron oxide on its surface."},
+{ id:"g4",c:"General Knowledge",l:"Medium",t:"mcq",q:"Which ocean is the largest?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,e:"The Pacific Ocean is the largest."},
+{ id:"g5",c:"General Knowledge",l:"Hard",t:"mcq",q:"Which element has the chemical symbol Fe?",o:["Fluorine","Iron","Francium","Lead"],a:1,e:"Fe comes from the Latin name ferrum, meaning iron."},
+{ id:"g6",c:"General Knowledge",l:"Hard",t:"truefalse",q:"The human body has 206 bones in a typical adult.",a:true,e:"A typical adult human skeleton has 206 bones."},
+{ id:"lo1",c:"Logic",l:"Easy",t:"mcq",q:"What comes next: 2, 4, 6, 8, ...?",o:["9","10","12","14"],a:1,e:"The sequence increases by 2."},
+{ id:"lo2",c:"Logic",l:"Easy",t:"mcq",q:"If all cats are animals, which statement must be true?",o:["All animals are cats","Every cat is an animal","No cats are animals","All animals are pets"],a:1,e:"This repeats the given relationship."},
+{ id:"lo3",c:"Logic",l:"Medium",t:"mcq",q:"A clock shows 3:00. What is the angle between its hands?",o:["45°","60°","90°","120°"],a:2,e:"At 3:00, the hands form a right angle: 90°."},
+{ id:"lo4",c:"Logic",l:"Medium",t:"text",q:"Complete the pattern: 1, 1, 2, 3, 5, 8, ...",a:"13",e:"Each number is the sum of the previous two."},
+{ id:"lo5",c:"Logic",l:"Hard",t:"mcq",q:"If yesterday was Monday, what day is tomorrow?",o:["Tuesday","Wednesday","Thursday","Sunday"],a:1,e:"Yesterday Monday means today Tuesday and tomorrow Wednesday."},
+{ id:"lo6",c:"Logic",l:"Hard",t:"mcq",q:"A farmer has 17 sheep. All but 9 run away. How many remain?",o:["8","9","17","0"],a:1,e:"All but 9 means 9 remain."}
+];
+
+let app,auth,db,uid=null,online=false;
+let mode="solo",playerName="Player",roomId=null,roomData=null,isHost=false;
+let questions=[],index=0,score=0,answered=false,timerValue=20,timerInterval=null;
+let soloCategory="All subjects",soloLevel="all",lastSolo=[];
+let roomUnsub=null,roomTimer=null;
+
+function setConnection(message,kind="warn"){ $("connection").textContent=message;$("connection").className="status "+kind; }
+try{
+ app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
+ signInAnonymously(auth).catch(e=>setConnection("Online mode unavailable. Solo mode is still available.","warn"));
+ onAuthStateChanged(auth,user=>{if(user){uid=user.uid;online=true;setConnection("Online services connected. Duo mode is ready.","good")}});
+}catch(e){setConnection("Could not connect to online services. Solo mode is still available.","warn");}
+
+function show(id){["home","soloSetup","duoSetup","lobby","game","results"].forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");}
+function goHome(){clearInterval(timerInterval);if(roomUnsub){roomUnsub();roomUnsub=null}show("home");}
+window.goHome=goHome;
+window.showSoloSetup=()=>{show("soloSetup");};
+window.showDuoSetup=()=>{show("duoSetup");};
+categories.forEach(c=>{let o=document.createElement("option");o.value=c;o.textContent=c;$("soloCategory").appendChild(o)});
+
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function norm(s){return String(s??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.!?。！？，,]/g,"").replace(/\s+/g," ")}
+function historyGet(){try{return JSON.parse(localStorage.getItem("dcPlayed")||"{}")}catch{return {}}}
+function historySave(id){let h=historyGet();h[id]=Date.now();localStorage.setItem("dcPlayed",JSON.stringify(h))}
+function recentIds(){let h=historyGet(),cut=Date.now()-5*24*60*60*1000;return new Set(Object.keys(h).filter(k=>h[k]>cut))}
+function makeQuestionSet(cat,level,count=10,excluded=[]){
+ let pool=bank.filter(q=>(cat==="All subjects"||q.c===cat)&&(level==="all"||q.l===level)&&!excluded.includes(q.id));
+ if(pool.length<Math.min(count,5))pool=bank.filter(q=>(cat==="All subjects"||q.c===cat)&&(level==="all"||q.l===level));
+ return shuffle(pool).slice(0,count);
+}
+window.startSolo=()=>{
+ playerName=$("soloName").value.trim()||"Player";soloCategory=$("soloCategory").value;soloLevel=$("soloLevel").value;
+ let recent=recentIds();questions=makeQuestionSet(soloCategory,soloLevel,10,[...recent]);
+ if(!questions.length){alert("No questions found for this selection.");return}
+ if(questions.every(q=>recent.has(q.id)))alert("You have recently played these questions. Some questions may repeat because this category has a small question pool.");
+ questions.forEach(q=>historySave(q.id));
+ mode="solo";score=0;index=0;show("game");renderQuestion();
+};
+function renderQuestion(){
+ clearInterval(timerInterval);answered=false;timerValue=20;
+ let q=questions[index];if(!q){finishGame();return}
+ $("modeLabel").textContent=mode==="solo"?"SOLO MODE":"DUO MODE";
+ $("qNumber").textContent=index+1;$("qTotal").textContent=questions.length;
+ $("progressBar").style.width=(index/questions.length*100)+"%";
+ $("categoryLabel").textContent=q.c.toUpperCase();$("levelLabel").textContent=q.l.toUpperCase()+" LEVEL";
+ $("questionText").textContent=q.q;$("timer").textContent=timerValue;
+ $("feedback").innerHTML="";$("explanation").textContent="";
+ $("answerArea").innerHTML="";$("gameActions").innerHTML="";
+ if(q.t==="mcq"){
+  q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.onclick=()=>answer(i);$("answerArea").appendChild(b)});
+ }else if(q.t==="truefalse"){
+  ["True","False"].forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.onclick=()=>answer(i===0);$("answerArea").appendChild(b)});
+ }else{
+  $("answerArea").style.gridTemplateColumns="1fr";
+  let inp=document.createElement("input");inp.id="typedAnswer";inp.placeholder="Type your answer here...";
+  let b=document.createElement("button");b.textContent="SUBMIT ANSWER";b.onclick=()=>answer(inp.value);
+  $("answerArea").append(inp,b);
+ }
+ updateScores();
+ timerInterval=setInterval(()=>{if(answered)return;timerValue--;$("timer").textContent=timerValue;if(timerValue<=0){clearInterval(timerInterval);if(mode==="solo")answer("__TIME_UP__");else $("feedback").textContent="Time is up! Submit an answer to continue."}},1000);
+}
+function isCorrect(q,value){
+ if(value==="__TIME_UP__")return false;
+ if(q.t==="mcq")return Number(value)===q.a;
+ if(q.t==="truefalse")return value===q.a;
+ return norm(value)===norm(q.a);
+}
+function answer(value){
+ if(answered)return;let q=questions[index],ok=isCorrect(q,value);
+ if(mode==="solo"){
+  answered=true;clearInterval(timerInterval);if(ok)score+=10;
+  showFeedback(q,ok);updateScores();
+  let b=document.createElement("button");b.textContent=index===questions.length-1?"SEE RESULTS":"NEXT QUESTION";b.onclick=nextSolo;$("gameActions").appendChild(b);
+ }else submitDuoAnswer(value,ok);
+}
+function showFeedback(q,ok){
+ $("feedback").className="feedback "+(ok?"good":"bad");
+ $("feedback").textContent=ok?"Correct! +10 points":"Not quite. The correct answer is: "+(q.t==="mcq"?q.o[q.a]:q.t==="truefalse"?(q.a?"True":"False"):q.a);
+ $("explanation").textContent=q.e||"";
+}
+function updateScores(){
+ if(mode==="solo"){$("scoreBoard").innerHTML=`<div class="player"><strong>${escapeHTML(playerName)}</strong>${score} points</div>`}
+ else if(roomData){$("scoreBoard").innerHTML=Object.values(roomData.players||{}).map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong>${p.score||0} points</div>`).join("")}
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function nextSolo(){index++;if(index>=questions.length)finishGame();else renderQuestion()}
+function finishGame(){
+ clearInterval(timerInterval);show("results");$("resultTitle").textContent="CHALLENGE COMPLETE!";
+ $("resultText").textContent=mode==="solo"?`${playerName}, you scored ${score} points!`:"The duo challenge has ended.";
+ if(mode==="solo")$("finalScores").innerHTML=`<div class="player"><strong>${escapeHTML(playerName)}</strong>${score} points</div>`;
+ else if(roomData)$("finalScores").innerHTML=Object.values(roomData.players||{}).map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong>${p.score||0} points</div>`).join("");
+}
+window.playAgain=()=>{if(mode==="solo")startSolo();else goHome()};
+window.exitGame=()=>{if(mode==="duo")leaveRoom();else goHome()};
+
+/* DUO ROOM FUNCTIONS */
+function makeCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
+function requireOnline(){if(!online||!uid||!db){alert("Online connection is not ready. Please wait a moment and try again. Solo mode works without it.");return false}return true}
+window.createRoom=async()=>{
+ if(!requireOnline())return;
+ playerName=$("duoName").value.trim()||"Player";
+ try{
+  let code=makeCode(),roomRef=ref(db,"rooms/"+code);
+  let initial={host:uid,status:"waiting",round:0,questionIds:[],players:{[uid]:{name:playerName,score:0,joinedAt:Date.now()}},answers:{}};
+  await set(roomRef,initial);roomId=code;isHost=true;listenRoom();show("lobby");
+ }catch(e){alert("Could not create the room: "+e.message)}
+};
+window.joinRoom=async()=>{
+ if(!requireOnline())return;
+ playerName=$("duoName").value.trim()||"Player";let code=$("joinCode").value.trim().toUpperCase();
+ if(!/^[A-Z0-9]{6}$/.test(code)){alert("Please enter a valid 6-character room code.");return}
+ try{
+  let roomRef=ref(db,"rooms/"+code),snap=await get(roomRef);
+  if(!snap.exists()){alert("Room not found. Check the code and try again.");return}
+  let data=snap.val();if(Object.keys(data.players||{}).length>=2&&!data.players[uid]){alert("This room already has two players.");return}
+  if(data.status==="playing"&&!data.players[uid]){alert("This game has already started.");return}
+  await update(ref(db,"rooms/"+code+"/players/"+uid),{name:playerName,score:0,joinedAt:Date.now()});
+  roomId=code;isHost=data.host===uid;listenRoom();show(data.status==="playing"?"game":"lobby");
+ }catch(e){alert("Could not join the room: "+e.message)}
+};
+function listenRoom(){
+ if(roomUnsub)roomUnsub();
+ roomUnsub=onValue(ref(db,"rooms/"+roomId),snap=>{
+  if(!snap.exists()){alert("This room no longer exists.");goHome();return}
+  roomData=snap.val();
+  if(roomData.status==="waiting"){show("lobby");renderLobby()}
+  else if(roomData.status==="playing"){show("game");renderDuoQuestion()}
+  else if(roomData.status==="finished"){finishGame()}
+ });
+}
+function renderLobby(){
+ $("roomCode").textContent=roomId;
+ let ps=Object.values(roomData.players||{});
+ $("lobbyPlayers").innerHTML=ps.map(p=>`<div class="player"><strong>${escapeHTML(p.name)}</strong><span class="small">Ready to play</span></div>`).join("");
+ $("lobbyMessage").textContent=ps.length<2?"Waiting for your friend to join...":"Both players are here. The host can start the game!";
+ $("startDuo").disabled=!(isHost&&ps.length===2);
+}
+window.copyRoomCode=async()=>{try{await navigator.clipboard.writeText(roomId);alert("Room code copied!")}catch{alert("Your room code is: "+roomId)}};
+window.startDuoGame=async()=>{
+ if(!isHost||!roomData||Object.keys(roomData.players||{}).length!==2)return;
+ let history=roomData.history||{};
+ let recent=Object.keys(history).filter(id=>Date.now()-history[id]<5*24*60*60*1000);
+ let chosen=makeQuestionSet("All subjects","all",10,recent);
+ if(chosen.length<5)chosen=makeQuestionSet("All subjects","all",10,[]);
+ let ids=chosen.map(q=>q.id),updates={status:"playing",round:0,questionIds:ids,answers:{}};
+ ids.forEach(id=>history[id]=Date.now());updates.history=history;
+ await update(ref(db,"rooms/"+roomId),updates);
+};
+function currentDuoQuestion(){let id=roomData?.questionIds?.[roomData.round];return bank.find(q=>q.id===id)}
+function renderDuoQuestion(){
+ if(!roomData)return;
+ questions=(roomData.questionIds||[]).map(id=>bank.find(q=>q.id===id)).filter(Boolean);
+ index=roomData.round||0;
+ let q=currentDuoQuestion();if(!q)return;
+ clearInterval(timerInterval);answered=false;timerValue=20;
+ $("modeLabel").textContent="DUO MODE · ROOM "+roomId;
+ $("qNumber").textContent=index+1;$("qTotal").textContent=questions.length;
+ $("progressBar").style.width=(index/questions.length*100)+"%";
+ $("categoryLabel").textContent=q.c.toUpperCase();$("levelLabel").textContent=q.l.toUpperCase()+" LEVEL";
+ $("questionText").textContent=q.q;$("timer").textContent="--";
+ $("feedback").innerHTML="";$("explanation").textContent="";$("answerArea").innerHTML="";$("gameActions").innerHTML="";
+ let existing=roomData.answers?.[index]?.[uid];
+ if(existing){answered=true;showFeedback(q,existing.correct);$("feedback").textContent=existing.correct?"Your answer is correct! +10 points":"Your answer has been submitted."}
+ if(q.t==="mcq")q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.disabled=answered;b.onclick=()=>answer(i);$("answerArea").appendChild(b)});
+ else if(q.t==="truefalse")["True","False"].forEach((v,i)=>{let b=document.createElement("button");b.className="answer";b.textContent=v;b.disabled=answered;b.onclick=()=>answer(i===0);$("answerArea").appendChild(b)});
+ else{let inp=document.createElement("input");inp.id="typedAnswer";inp.placeholder="Type your answer...";inp.disabled=answered;let b=document.createElement("button");b.textContent="SUBMIT";b.disabled=answered;b.onclick=()=>answer(inp.value);$("answerArea").append(inp,b)}
+ let answers=roomData.answers?.[index]||{};
+ let count=Object.keys(answers).length;
+ $("feedback").textContent=answered?"Your answer has been submitted. Waiting for the other player...":`Answers submitted: ${count}/2`;
+ if(isHost&&count===2){let b=document.createElement("button");b.textContent=index===questions.length-1?"FINISH GAME":"NEXT QUESTION";b.onclick=advanceDuo;$("gameActions").appendChild(b)}
+ updateScores();
+}
+async function submitDuoAnswer(value,ok){
+ if(answered)return;answered=true;clearInterval(timerInterval);
+ try{
+  let answerRef=ref(db,`rooms/${roomId}/answers/${index}/${uid}`);
+  await set(answerRef,{correct:ok,submittedAt:Date.now()});
+  if(ok)await runTransaction(ref(db,`rooms/${roomId}/players/${uid}/score`),v=>(v||0)+10);
+ }catch(e){answered=false;alert("Could not submit your answer: "+e.message)}
+}
+async function advanceDuo(){
+ if(!isHost||!roomData)return;
+ if(index>=questions.length-1){await update(ref(db,"rooms/"+roomId),{status:"finished"});return}
+ await update(ref(db,"rooms/"+roomId),{round:index+1});
+}
+window.leaveRoom=async()=>{
+ clearInterval(timerInterval);if(roomUnsub){roomUnsub();roomUnsub=null}
+ if(roomId&&uid){try{await remove(ref(db,`rooms/${roomId}/players/${uid}`))}catch{}}
+ roomId=null;roomData=null;goHome();
+};
+</script>
+</body>
+</html>
