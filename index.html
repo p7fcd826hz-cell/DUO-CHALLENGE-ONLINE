@@ -127,6 +127,14 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
 .chrono-skip{background:#51406e;color:white;border:0;border-radius:12px;padding:13px 18px;font-weight:800}
 .chrono-wait{padding:18px;text-align:center;color:var(--muted)}
 </style>
+
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DUO CHALLENGE">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+
 </head>
 <body>
 <header>
@@ -2957,6 +2965,17 @@ window.addEventListener("beforeunload",()=>{
   // Timer expiry for regular rounds and all-player resolution use participant count.
   window.addEventListener('load',refreshSoundButton);
 })();
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
 </script>
 
 </body>
