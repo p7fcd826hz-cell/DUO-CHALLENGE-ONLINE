@@ -119,12 +119,19 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
   .hero{padding-top:25px}
   .card{padding:18px}
 }
+.chrono-panel{background:linear-gradient(145deg,#242044,#15152a);border:1px solid var(--border);border-radius:20px;padding:20px;margin-top:16px}
+.chrono-clock{font-size:52px;font-weight:950;text-align:center;color:var(--cyan);font-variant-numeric:tabular-nums}
+.chrono-player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin:14px 0}
+.chrono-player{background:#101020;padding:11px;border-radius:12px;text-align:center}
+.chrono-player strong{display:block;font-size:20px}
+.chrono-skip{background:#51406e;color:white;border:0;border-radius:12px;padding:13px 18px;font-weight:800}
+.chrono-wait{padding:18px;text-align:center;color:var(--muted)}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">DUO <span>CHALLENGE</span></div>
-  <div class="status" id="connectionStatus">● Initializing...</div>
+  <div style="display:flex;align-items:center;gap:12px"><button class="secondary" id="soundToggle" type="button" onclick="toggleGameSound()" style="padding:8px 11px">🔊 Sound ON</button><div class="status" id="connectionStatus">● Initializing...</div></div>
 </header>
 
 <main>
@@ -229,6 +236,22 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
   <div class="card">
     <h3>Competition mode</h3>
     <div class="field">
+      <label>Maximum players in this room</label>
+      <select id="duoMaxPlayers">
+        <option value="2">2 players</option><option value="3">3 players</option>
+        <option value="4">4 players</option><option value="5">5 players</option>
+        <option value="6">6 players</option><option value="7">7 players</option>
+        <option value="8">8 players</option>
+      </select>
+    </div>
+    <div class="field" id="chronoStyleField" style="display:none">
+      <label>Chrono Quiz play style</label>
+      <select id="chronoStyle">
+        <option value="simultaneous">Everyone plays at the same time</option>
+        <option value="turns">Players take turns</option>
+      </select>
+    </div>
+    <div class="field">
       <select id="duoMode">
         <option value="classic">🏆 Classic Duel</option>
         <option value="speed">⚡ Speed Race</option>
@@ -236,6 +259,7 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
         <option value="streak">🔥 Streak Battle</option>
         <option value="double">🎲 Double or Nothing</option>
         <option value="random">🎭 Random Mode</option>
+        <option value="chrono">⏱️ Chrono Quiz (25 seconds)</option>
       </select>
     </div>
     <h3 style="margin-top:22px">Choose subjects</h3>
@@ -311,10 +335,8 @@ footer{text-align:center;color:#77758e;font-size:12px;padding:25px}
     <p class="muted">YOUR ROOM CODE</p>
     <div class="room-code" id="roomCodeDisplay">------</div>
     <button class="secondary" onclick="copyRoomCode()">COPY CODE</button>
-    <div class="score-row" style="margin-top:22px;text-align:left">
-      <div class="score-box"><span class="muted">Player 1</span><strong id="lobbyPlayer1">Waiting...</strong></div>
-      <div class="score-box"><span class="muted">Player 2</span><strong id="lobbyPlayer2">Waiting...</strong></div>
-    </div>
+    <div id="lobbyPlayersList" class="score-row" style="margin-top:22px;text-align:left"></div>
+    <p id="lobbyCapacity" class="muted" style="margin-top:10px"></p>
     <p id="lobbyMessage" class="notice" style="margin-top:18px">Waiting for another player...</p>
     <button id="startDuoButton" class="primary full hidden" onclick="startDuoGame()" style="margin-top:15px">START CHALLENGE</button>
   </div>
@@ -1422,6 +1444,8 @@ async function createRoom() {
       mode:selectedMode,
       questionCount:count,
       seconds,
+      maxPlayers:Number(document.getElementById("duoMaxPlayers")?.value || 2),
+      chronoStyle:document.getElementById("chronoStyle")?.value || "simultaneous",
       round:0,
       roundStartedAt:0,
       questions:[],
@@ -1492,7 +1516,7 @@ async function joinRoom() {
       duoPlayerName=players[user.uid].name;
       duoIsHost=room.host===user.uid;
     } else {
-      if(Object.keys(players).length>=2){
+      if(Object.keys(players).length>=Number(room.maxPlayers || 2)){
         alert("This room is full.");
         return;
       }
@@ -1558,37 +1582,27 @@ function listenRoom(code) {
 
 function renderLobby() {
   if(!currentRoom) return;
-
-  document.getElementById("roomCodeDisplay").textContent=
-    currentRoom.code;
-
+  document.getElementById("roomCodeDisplay").textContent=currentRoom.code;
   const players=Object.values(currentRoom.players || {});
-
-  document.getElementById("lobbyPlayer1").textContent=
-    players[0]?.name || "Waiting...";
-
-  document.getElementById("lobbyPlayer2").textContent=
-    players[1]?.name || "Waiting...";
-
+  const list=document.getElementById("lobbyPlayersList");
+  if(list) list.innerHTML=players.map((p,i)=>`<div class="score-box"><span class="muted">Player ${i+1}</span><strong>${String(p.name||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}</strong></div>`).join("");
+  const capacity=document.getElementById("lobbyCapacity");
+  if(capacity) capacity.textContent=`${players.length}/${currentRoom.maxPlayers||2} players connected`;
   const startButton=document.getElementById("startDuoButton");
-
-  const ready=players.length===2;
+  const ready=players.length>=2;
   const host=currentRoom.host===currentUser?.uid;
-
   if(host && ready){
     startButton.classList.remove("hidden");
-    document.getElementById("lobbyMessage").textContent=
-      "Both players are connected. You can start the challenge!";
+    document.getElementById("lobbyMessage").textContent=players.length>=(currentRoom.maxPlayers||2)?"The room is full. You can start!":"Players are connected. You can start now or wait for more.";
   } else if(host){
     startButton.classList.add("hidden");
-    document.getElementById("lobbyMessage").textContent=
-      "Share the room code with your friend.";
+    document.getElementById("lobbyMessage").textContent="Share the room code and wait for at least one more player.";
   } else {
     startButton.classList.add("hidden");
-    document.getElementById("lobbyMessage").textContent=
-      "Connected! Waiting for the host to start.";
+    document.getElementById("lobbyMessage").textContent="Connected! Waiting for the host to start.";
   }
 }
+window.renderLobby=renderLobby;
 
 /* ---------- COPY ROOM CODE ---------- */
 
@@ -1692,7 +1706,8 @@ const DUO_MODE_NAMES={
   speed:"Speed Race",
   sudden:"Sudden Death",
   streak:"Streak Battle",
-  double:"Double or Nothing"
+  double:"Double or Nothing",
+  chrono:"Chrono Quiz"
 };
 
 function duoEscape(value){
@@ -2094,6 +2109,7 @@ async function submitDuoAnswer(optionIndex){
 
     await api.set(
       api.ref(
+        api.db,
         `rooms/${room.code}/answers/${round}/${user.uid}`
       ),
       answerData
@@ -2140,13 +2156,13 @@ async function resolveDuoRound(code,roundNumber){
     // Wait for both answers unless the timer has expired.
     const elapsed=(Date.now()-Number(room.roundStartedAt || Date.now()))/1000;
 
-    if(Object.keys(answers).length<2 && elapsed<Number(room.seconds)){
+    if(Object.keys(answers).length<players.length && elapsed<Number(room.seconds)){
       return;
     }
 
     // Claim the round exactly once.
     const claim=await api.runTransaction(
-      api.ref(`rooms/${code}/resolved/${roundNumber}`),
+      api.ref(api.db,`rooms/${code}/resolved/${roundNumber}`),
       current=>{
         if(current) return;
         return {
@@ -2404,7 +2420,7 @@ window.handleDuoRoomUpdate=function(room){
   // Host checks if both players have answered.
   const answers=room.answers?.[round] || {};
 
-  if(window.getDuoIsHost() && Object.keys(answers).length===2){
+  if(window.getDuoIsHost() && Object.keys(answers).length>=duoPlayers(room).length){
     resolveDuoRound(room.code,round);
   }
 };
@@ -2472,7 +2488,7 @@ function updateDuoAnswerCount(room){
   );
 
   if(progress){
-    progress.textContent=count+"/2 players answered";
+    progress.textContent=count+"/"+duoPlayers(room).length+" players answered";
   }
 
   const user=window.getCurrentUser();
@@ -2733,6 +2749,175 @@ window.addEventListener("beforeunload",()=>{
 
   languagesToggle.addEventListener("change", updateDuoLanguageOptions);
   updateDuoLanguageOptions();
+})();
+</script>
+
+
+<script>
+/* DUO CHALLENGE UPDATE: multiplayer rooms, Chrono Quiz and sound */
+(function(){
+  const $=id=>document.getElementById(id);
+  let chronoTick=null;
+  let audioCtx=null, musicTimer=null, soundEnabled=localStorage.getItem('dc_sound')!=='off';
+  const originalCreateRoom=window.createRoom;
+
+  function refreshSoundButton(){
+    const b=$('soundToggle'); if(b) b.textContent=soundEnabled?'🔊 Sound ON':'🔇 Sound OFF';
+  }
+  window.toggleGameSound=function(){
+    soundEnabled=!soundEnabled; localStorage.setItem('dc_sound',soundEnabled?'on':'off');
+    refreshSoundButton(); if(!soundEnabled) stopMusic(); else startMusic();
+  };
+  function audio(){
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C) return null;
+    if(!audioCtx) audioCtx=new C();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function tone(freq=660,duration=.12,type='sine',volume=.045){
+    if(!soundEnabled) return;
+    const c=audio(); if(!c) return;
+    const o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(volume,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+duration);
+    o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+duration);
+  }
+  function stopMusic(){ if(musicTimer){clearInterval(musicTimer);musicTimer=null;} }
+  function startMusic(){
+    if(!soundEnabled||musicTimer) return;
+    const notes=[392,494,587,494,440,523,659,523]; let i=0;
+    musicTimer=setInterval(()=>{if(soundEnabled)tone(notes[i++%notes.length],.16,'triangle',.018);},260);
+  }
+  window.addEventListener('beforeunload',stopMusic);
+  refreshSoundButton();
+  $('duoMode')?.addEventListener('change',()=>{if($('chronoStyleField'))$('chronoStyleField').style.display=$('duoMode').value==='chrono'?'block':'none';});
+
+  // Override lobby to show all players and the configured room capacity.
+  window.renderLobby=function(){
+    const room=window.getCurrentRoom(); if(!room)return;
+    $('roomCodeDisplay').textContent=room.code;
+    const players=Object.values(room.players||{});
+    $('lobbyPlayersList').innerHTML=players.map((p,i)=>`<div class="score-box"><span class="muted">Player ${i+1}</span><strong>${escapeHTML(p.name)}</strong></div>`).join('');
+    $('lobbyCapacity').textContent=`${players.length}/${room.maxPlayers||2} players connected`;
+    const host=room.host===window.getCurrentUser()?.uid;
+    const btn=$('startDuoButton');
+    if(host&&players.length>=2){btn.classList.remove('hidden');$('lobbyMessage').textContent=players.length>=(room.maxPlayers||2)?'The room is full. You can start!':'Players are connected. You can start now or wait for more.';}
+    else {btn.classList.add('hidden');$('lobbyMessage').textContent=host?'Share the room code and wait for at least one more player.':'Connected! Waiting for the host to start.';}
+  };
+  function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  // Start standard modes for 2–8 players; Chrono has its own 25-second engine.
+  window.startDuoGame=async function(){
+    try{
+      const api=window.firebaseDuo, room=window.getCurrentRoom(), user=window.getCurrentUser();
+      if(!api||!room||!user)return;
+      if(room.host!==user.uid){alert('Only the host can start the game.');return;}
+      const players=Object.entries(room.players||{}).map(([uid,p])=>({uid,...p}));
+      if(players.length<2){alert('At least two players are needed.');return;}
+      if(players.length>(room.maxPlayers||2)){alert('The room has reached its player limit.');return;}
+      if(room.mode==='chrono'){
+        const questions=selectDuoQuestions({...room,questionCount:Math.max(40,room.questionCount||20)});
+        const state={style:room.chronoStyle||'simultaneous',startedAt:Date.now(),activeTurn:0,turnStartedAt:Date.now(),players:{}};
+        players.forEach(p=>{const q=[...questions].sort(()=>Math.random()-.5);state.players[p.uid]={name:p.name,queue:q,index:0,score:0,correct:0,skipped:0,attempted:0};});
+        await api.update(api.roomRef(room.code),{status:'playing',activeMode:'chrono',questions,chronoState:state,roundStartedAt:Date.now(),scores:Object.fromEntries(players.map(p=>[p.uid,0])),answers:{},round:0,roundResult:null});
+        tone(660,.18,'triangle');startMusic();return;
+      }
+      const questions=selectDuoQuestions(room);
+      let activeMode=room.mode;
+      if(activeMode==='random'){const modes=Object.keys(DUO_MODE_NAMES).filter(m=>m!=='chrono');activeMode=modes[Math.floor(Math.random()*modes.length)];}
+      const scores={},streaks={},lives={};
+      players.forEach(p=>{scores[p.uid]=0;streaks[p.uid]=0;lives[p.uid]=3;});
+      await api.update(api.roomRef(room.code),{status:'playing',activeMode,questions,round:0,roundStartedAt:Date.now(),scores,streaks,lives,answers:{},resolved:{},roundResult:null,finishedAt:null});
+      tone(660,.18,'triangle');
+    }catch(e){console.error(e);alert(e.message||'Unable to start the game.');}
+  };
+
+  function chronoState(room){return room.chronoState||{style:'simultaneous',players:{},activeTurn:0,turnStartedAt:room.roundStartedAt};}
+  function currentChronoQuestion(room,uid){const p=chronoState(room).players?.[uid];if(!p)return null;return p.queue?.[p.index%p.queue.length]||null;}
+  function chronoScoresHTML(room){return Object.entries(chronoState(room).players||{}).map(([uid,p])=>`<div class="chrono-player"><span>${escapeHTML(p.name)}</span><strong>${p.score||0}</strong><small>${p.correct||0} correct</small></div>`).join('');}
+
+  window.renderChronoGame=function(room){
+    const user=window.getCurrentUser(),uid=user?.uid,state=chronoState(room),players=Object.keys(state.players||{}),style=state.style;
+    const me=state.players?.[uid]; if(!me)return;
+    const activeUid=players[state.activeTurn||0],isMyTurn=style==='simultaneous'||activeUid===uid;
+    const q=currentChronoQuestion(room,uid);
+    const remaining=style==='simultaneous'?25-Math.floor((Date.now()-state.startedAt)/1000):25-Math.floor((Date.now()-state.turnStartedAt)/1000);
+    const panel=$('duoGameScreen');
+    panel.innerHTML=`<div class="duo-game-panel"><div class="duo-game-top"><button onclick="leaveDuoGame()">← Leave</button><span>⏱️ CHRONO QUIZ · ${style==='simultaneous'?'SIMULTANEOUS':'TURN BY TURN'}</span><button onclick="toggleGameSound()">${soundEnabled?'🔊':'🔇'}</button></div><div class="chrono-clock" id="chronoClock">${Math.max(0,remaining)}s</div><div class="chrono-player-grid">${chronoScoresHTML(room)}</div>${isMyTurn&&remaining>0&&q?`<div class="chrono-panel"><p class="muted">Question ${me.attempted+1} · ${escapeHTML(q.pack||'Quiz')}</p><h2>${escapeHTML(q.question||q.text||'')}</h2><div class="duo-options">${(q.options||[]).map((o,i)=>`<button class="duo-answer-option" onclick="chronoAnswer(${i})"><span class="duo-option-letter">${String.fromCharCode(65+i)}</span>${escapeHTML(o)}</button>`).join('')}</div><button class="chrono-skip" style="width:100%;margin-top:12px" onclick="chronoSkip()">SKIP QUESTION →</button></div>`:style==='turns'&&remaining>0?`<div class="chrono-wait">It's ${escapeHTML(state.players[activeUid]?.name||'another player')}'s turn. Get ready!</div>`:`<div class="chrono-wait">Time is up! Waiting for the results...</div>`}<p class="muted center">${style==='simultaneous'?'Everyone plays during the same 25 seconds.':'Each player gets their own 25-second turn.'}</p></div>`;
+  };
+
+  async function chronoMove(uid,optionIndex,skip=false){
+    const api=window.firebaseDuo,room=window.getCurrentRoom(),user=window.getCurrentUser();if(!api||!room||!user||room.activeMode!=='chrono')return;
+    const state=chronoState(room),style=state.style,playerOrder=Object.keys(state.players||{}),activeUid=playerOrder[state.activeTurn||0];
+    if(style==='turns'&&activeUid!==uid)return;
+    const player=state.players?.[uid];if(!player)return;
+    const q=player.queue?.[player.index%player.queue.length];if(!q)return;
+    const val=skip?null:q.options?.[optionIndex];if(!skip&&val===undefined)return;
+    const correct=!skip&&duoCorrect(q,val);
+    const nextIndex=player.index+1;
+    const nextQ=player.queue[nextIndex%player.queue.length];
+    const path=api.ref(api.db,`rooms/${room.code}/chronoState/players/${uid}`);
+    await api.runTransaction(path,current=>{
+      if(!current)return current;
+      const n={...current,index:nextIndex,attempted:(current.attempted||0)+1,score:(current.score||0)+(correct?10:0),correct:(current.correct||0)+(correct?1:0),skipped:(current.skipped||0)+(skip?1:0)};
+      return n;
+    });
+    if(correct)tone(880,.16,'sine');else if(!skip)tone(190,.18,'sawtooth');else tone(430,.08,'triangle');
+    const fresh=window.getCurrentRoom(); if(fresh)window.renderChronoGame(fresh);
+  }
+  window.chronoAnswer=i=>chronoMove(window.getCurrentUser()?.uid,i,false);
+  window.chronoSkip=()=>chronoMove(window.getCurrentUser()?.uid,0,true);
+
+  async function finishChronoTurn(room){
+    const api=window.firebaseDuo,user=window.getCurrentUser();if(!api||!user||room.host!==user.uid)return;
+    const state=chronoState(room),order=Object.keys(state.players||{});
+    if(state.style==='simultaneous'){
+      await api.update(api.roomRef(room.code),{status:'finished',finishedAt:Date.now(),scores:Object.fromEntries(order.map(uid=>[uid,state.players[uid].score||0]))});
+    }else{
+      const next=(state.activeTurn||0)+1;
+      if(next>=order.length){await api.update(api.roomRef(room.code),{status:'finished',finishedAt:Date.now(),scores:Object.fromEntries(order.map(uid=>[uid,state.players[uid].score||0]))});}
+      else await api.update(api.roomRef(room.code),{chronoState:{...state,activeTurn:next,turnStartedAt:Date.now()}});
+    }
+  }
+  function chronoTimer(room){
+    if(chronoTick)clearInterval(chronoTick);
+    const code=room.code,host=window.getDuoIsHost();
+    chronoTick=setInterval(async()=>{
+      const r=window.getCurrentRoom();if(!r||r.status!=='playing'||r.activeMode!=='chrono'){clearInterval(chronoTick);chronoTick=null;return;}
+      const st=chronoState(r),start=st.style==='simultaneous'?st.startedAt:st.turnStartedAt;
+      const rem=Math.max(0,25-Math.floor((Date.now()-start)/1000));
+      const clock=$('chronoClock');if(clock)clock.textContent=rem+'s';
+      if(rem<=0&&host){clearInterval(chronoTick);chronoTick=null;await finishChronoTurn(r);}
+    },200);
+  }
+
+  // Override results to rank every participant.
+  window.showDuoResults=function(room){
+    if(chronoTick){clearInterval(chronoTick);chronoTick=null;}stopMusic();
+    const players=Object.entries(room.players||{}).map(([uid,p])=>({uid,...p,score:Number(room.scores?.[uid]??room.chronoState?.players?.[uid]?.score??0)})).sort((a,b)=>b.score-a.score);
+    const winner=players.length&&players[0].score>(players[1]?.score??-1)?players[0]:null;
+    $('duoGameScreen').innerHTML=`<div class="duo-result-panel"><div class="duo-result-icon">🏆</div><h1>${winner?escapeHTML(winner.name)+' wins!':'It\'s a draw!'}</h1><p>${room.activeMode==='chrono'?'Chrono Quiz · 25 seconds':'Challenge complete'}</p><div class="duo-final-ranking">${players.map((p,i)=>`<div class="duo-final-player"><span>${i===0?'🏆':i===1?'🥈':'#'+(i+1)} ${escapeHTML(p.name)}</span><strong>${p.score} pts</strong></div>`).join('')}</div>${room.activeMode==='chrono'?`<p>${Object.values(room.chronoState?.players||{}).reduce((n,p)=>n+(p.correct||0),0)} correct answers across the room</p>`:''}<button onclick="playDuoAgain()">Play Again</button><button onclick="leaveDuoGame()">Back to Home</button></div>`;
+    showScreen('duoGameScreen');tone(winner?1046:520,.45,'triangle',.06);
+  };
+
+  // Extend room updates for Chrono Quiz and dynamic multiplayer.
+  window.handleDuoRoomUpdate=function(room){
+    if(!room)return;
+    if(room.status==='waiting'){window.renderLobby();return;}
+    if(room.status==='finished'){window.showDuoResults(room);return;}
+    if(room.status!=='playing')return;
+    showScreen('duoGameScreen');
+    if(room.activeMode==='chrono'){window.renderChronoGame(room);chronoTimer(room);return;}
+    const round=room.round;
+    if(room.roundResult&&room.roundResult.round===round){if(typeof renderDuoRoundResult==='function')renderDuoRoundResult(room);return;}
+    if(duoRenderedRound!==round||duoLastRoomStatus!==room.status){duoRenderedRound=round;duoLastRoomStatus=room.status;renderDuoGame(room);}else updateDuoAnswerCount(room);
+    const answers=room.answers?.[round]||{};
+    if(window.getDuoIsHost()&&Object.keys(answers).length>=duoPlayers(room).length)resolveDuoRound(room.code,round);
+  };
+
+  // Timer expiry for regular rounds and all-player resolution use participant count.
+  window.addEventListener('load',refreshSoundButton);
 })();
 </script>
 
